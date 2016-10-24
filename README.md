@@ -15,4 +15,5 @@ Its aim is to extract efficiently a tarball. The program uses threads in order t
 # Authors
 
 @martyrisateur (Lucas Martinez), lucas.martinez@telecomnancy.net
+
 @mcdostone (Yann Prono), yann.prono@telecomnancy.net
