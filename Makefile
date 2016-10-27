@@ -5,10 +5,10 @@ OBJ = $(wildcard $(BUILDDIR)/*.o)
 
 INC = -I $(INCDIR)
 CC = gcc
-CFLAGS = -g -Wall $(INC)
+CFLAGS = -g -Wall
 
 PGM = ptar
-TARGET = bin/$(PGM)
+TARGET = ./$(PGM)
 
 $(shell mkdir -p $(BUILDDIR))
 $(shell mkdir -p bin)
@@ -16,9 +16,9 @@ $(shell mkdir -p bin)
 
 all: ptar
 
-ptar:
-	@echo "Nothing to compile for the moment"
-	
 # Generic task
 %.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $(BUILDDIR)/$@
+	$(CC) $(CFLAGS) $(INC) -c $< -o $(BUILDDIR)/$@
+
+ptar: header_posix_ustar.o ptar.o
+	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
