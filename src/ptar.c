@@ -4,9 +4,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include "header_posix_ustar.h"
 #include "block.h"
+
 
 void read_data_block(int fd, int size_data) {
 	block data_bloc;
@@ -15,7 +15,6 @@ void read_data_block(int fd, int size_data) {
 		size_data = size_data - r;
 	}
 }
-
 
 int read_tar_file(int fd) {
 	// Count zeros block at the end of file

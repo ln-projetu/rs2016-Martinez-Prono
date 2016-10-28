@@ -16,17 +16,23 @@ $(shell mkdir -p bin)
 
 all: createArchive ptar
 
+
 # Generic task
 %.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $(BUILDDIR)/$@
+
 
 ptar: block.o header_posix_ustar.o utils.o ptar.o
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 
-### Create tar archive for tests
+
+### --------------------------------
+###  Create tar archive for tests
+### --------------------------------
 TAR = archive.tar
 FILES = README.md LICENSE
+
 createArchive:
 	@echo "# Create archive for test"
 	tar --format=ustar -cf $(TAR) $(FILES)

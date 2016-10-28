@@ -37,66 +37,81 @@ typedef struct header_posix_ustar {
 
 
 /**
- * @param tar_header The tar header.
- * @return The filename of the tar archive.
+ * @return The filename represented by this header.
  */
-char* get_name(header_posix_ustar *tar_header);
+char* get_name(header_posix_ustar *header);
 
 /**
- * @param tar_header The tar header.
- * @return Permissions of the tar archive (octal representation).
+ * @return Permissions of the file (octal representation).
  */
-char* get_mode(header_posix_ustar *tar_header);
+char* get_mode(header_posix_ustar *header);
 
 /**
- * @return the size of the archive in byts
- * ---TODO
+ * @return The user ID of this file (decimal).
+ */
+int get_uid(header_posix_ustar *header);
+
+/**
+ * @return The group ID of this file (decimal).
+ */
+int get_gid(header_posix_ustar *header);
+
+/**
+ * @return the size of the file in bytes.
  */ 
-int get_size(header_posix_ustar *tar_header);
+int get_size(header_posix_ustar *header);
+
+/**
+ * @return the modification time of the file.
+ */
+int get_mtime(header_posix_ustar *header);
+
+/**
+ * @return the checksum of the file.
+ */
+int get_checksum(header_posix_ustar *header);
 
 /**
  * @return
  */
-char* get_linkname(header_posix_ustar *tar_header);
+char* get_linkname(header_posix_ustar *header);
 
 /**
- * @return 0 if the tar archive is POSIX ustar standard archive.
+ * @return 0 if the tar is POSIX ustar standard archive.
  */
-int is_posix_ustar(header_posix_ustar *tar_header);
+int is_posix_ustar(header_posix_ustar *header);
 
 /**
- * Be careful, due to the structure of the heade,
+ * Be careful, due to the structure of the header,
  * calling this method will also return you the following field (the uname).
  * So you have to get only the two first characters.
  *
- * @return The version of the tar archive.
+ * @return The version of the tar header.
  * 
  */
-char* get_version(header_posix_ustar *tar_header);
+char* get_version(header_posix_ustar *header);
 
 /**
- * @param tar_header The tar header.
- * @return The user name of the tar archive.
+ * @return The user name of the file.
  */
-char* get_uname(header_posix_ustar *tar_header);
+char* get_uname(header_posix_ustar *header);
 
 /**
- * @param tar_header The tar header.
- * @return The group name of the tar archive.
+ * @return The group name of the file
  */
-char* get_gname(header_posix_ustar *tar_header);
+char* get_gname(header_posix_ustar *header);
 
 /**
  * Writes in the STDOUT all information about the tar header
- * @param tar_header The tar header.
+ * @param header The tar header.
  */
-void display_header(header_posix_ustar *tar_header);
+void display_header(header_posix_ustar *header);
 
 /**
  * Method not TESTED !
  * @return 1 if the given block is full of zeros bytes.
  */
-int is_empty(header_posix_ustar *tar_header);
+int is_empty(header_posix_ustar *header);
 
 
 #endif

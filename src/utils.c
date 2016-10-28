@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+
 int octal_to_integer(int octal) {
 	int res = 0;
 	int coef = 1;
@@ -12,5 +13,6 @@ int octal_to_integer(int octal) {
 
     return res;
 }
+
 
 #endif
