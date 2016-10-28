@@ -14,7 +14,7 @@ $(shell mkdir -p $(BUILDDIR))
 $(shell mkdir -p bin)
 
 
-all: ptar
+all: createArchive ptar
 
 # Generic task
 %.o: $(SRCDIR)/%.c
@@ -22,3 +22,12 @@ all: ptar
 
 ptar: header_posix_ustar.o ptar.o
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
+
+
+### Create tar archive for tests
+TAR = archive.tar
+FILES = README.md LICENSE
+createArchive:
+	@echo "# Create archive for test"
+	tar --format=posix -cf $(TAR) $(FILES)
+	@echo
