@@ -1,6 +1,8 @@
 #ifndef HEADER_POSIX_UPSTAR_H
 #define HEADER_POSIX_UPSTAR_H
 
+#define USTAR "ustar\x00"
+
 /**
  * Structure for the POSIX ustar archive header.
  * 
@@ -29,4 +31,41 @@ typedef struct header_posix_ustar {
 	char pad[12];			// ???
 } header_posix_ustar;
 
-#HEADER_POSIX_UPSTAR_H
+
+/**
+ * @param tar_header The tar header.
+ * @return The filename of the tar archive.
+ */
+char* get_name(header_posix_ustar *tar_header);
+
+/**
+ * @param tar_header The tar header.
+ * @return Permissions of the tar archive (octal representation).
+ */
+char* get_mode(header_posix_ustar *tar_header);
+
+int get_size(header_posix_ustar *tar_header);
+
+int is_ustar(header_posix_ustar *tar_header);
+
+/**
+ * @param tar_header The tar header.
+ * @return The user name of the tar archive.
+ */
+char* get_uname(header_posix_ustar *tar_header);
+
+/**
+ * @param tar_header The tar header.
+ * @return The group name of the tar archive.
+ */
+char* get_gname(header_posix_ustar *tar_header);
+
+
+/**
+ * Writes in the STDOUT all information about the tar header
+ * @param tar_header The tar header.
+ */
+void display_header(header_posix_ustar *tar_header);
+
+#endif
+
