@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "header_posix_ustar.h"
-#include "utils.h"
+
 
 int read_tar_file(const char *filename) {
 	int fd = -1;
@@ -19,7 +19,7 @@ int read_tar_file(const char *filename) {
 	int i;
 	header_posix_ustar tar_header;
 
-	while((i = read(fd, &tar_header, TAR_BLOCK_SIZE)) == TAR_BLOCK_SIZE) {
+	while((i = read(fd, &tar_header, BLOCK_SIZE)) == BLOCK_SIZE) {
 		
 		if(nb_zeros_blocks >= 2)				// Is it end of tar file ?
 			return 0;	
@@ -35,7 +35,6 @@ int read_tar_file(const char *filename) {
 
 	return 0;
 }
-
 
 int main(int argc, char const *argv[]) {
 	int statut;

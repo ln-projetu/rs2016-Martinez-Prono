@@ -1,8 +1,8 @@
 #ifndef HEADER_POSIX_UPSTAR_H
 #define HEADER_POSIX_UPSTAR_H
 
+#include "definitions.h"
 #include "utils.h"
-#define TAR_BLOCK_SIZE 512
 #define USTAR "ustar\x00"
 #define VERSION "00"
 
