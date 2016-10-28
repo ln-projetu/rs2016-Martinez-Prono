@@ -20,7 +20,7 @@ all: createArchive ptar
 %.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $(BUILDDIR)/$@
 
-ptar: header_posix_ustar.o ptar.o
+ptar: header_posix_ustar.o utils.o ptar.o
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 
@@ -29,5 +29,5 @@ TAR = archive.tar
 FILES = README.md LICENSE
 createArchive:
 	@echo "# Create archive for test"
-	tar --format=posix -cf $(TAR) $(FILES)
+	tar --format=ustar -cf $(TAR) $(FILES)
 	@echo

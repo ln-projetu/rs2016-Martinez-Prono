@@ -6,26 +6,44 @@
 #include <unistd.h>
 
 #include "header_posix_ustar.h"
+#include "utils.h"
 
-#define TAR_BLOCK_SIZE 512
+int read_tar_file(const char *filename) {
+	int fd = -1;
+	fd = open(filename, O_RDONLY, 0);
+	if (fd < 0)
+		return fd;
 
+	// Count zeros block at the end of file
+	int nb_zeros_blocks = 0;
+	int i;
+	header_posix_ustar tar_header;
 
-int main(int argc, char const *argv[]) {
+	while((i = read(fd, &tar_header, TAR_BLOCK_SIZE)) == TAR_BLOCK_SIZE) {
+		
+		if(nb_zeros_blocks >= 2)				// Is it end of tar file ?
+			return 0;	
+		else {									// Is it a zeros bytes block ?
+			if(is_empty(&tar_header))
+				nb_zeros_blocks++;			
+			else								// If not then it is a data block
+				display_header(&tar_header);
 
-	if(argc > 1) {
-		int fd = -1;
-		// Open the file
-		fd = open(argv[1], O_RDONLY, 0);
-
-		if (fd != -1) {
-			printf("can open %s\n", argv[1]);
-			header_posix_ustar tar_header;
-			// Read first 512 bytes block
-			read(fd, &tar_header, TAR_BLOCK_SIZE);
-			
-			display_header(&tar_header);
+		return 0;
 		}
 	}
 
-	exit(0);
+	return 0;
+}
+
+
+int main(int argc, char const *argv[]) {
+	int statut;
+	
+	if(argc > 1)
+		statut = read_tar_file(argv[1]);
+	else
+		statut = -1;
+
+	exit(statut);
 }

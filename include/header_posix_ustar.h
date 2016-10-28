@@ -1,15 +1,19 @@
 #ifndef HEADER_POSIX_UPSTAR_H
 #define HEADER_POSIX_UPSTAR_H
 
+#include "utils.h"
+#define TAR_BLOCK_SIZE 512
 #define USTAR "ustar\x00"
+#define VERSION "00"
+
 
 /**
  * Structure for the POSIX ustar archive header.
  * 
  *	@author Lucas MARTINEZ
  *	@author Yann PRONO
- *
  */
+
 
 typedef struct header_posix_ustar {
 	char name[100];			// File name 			trailing NUL
@@ -44,9 +48,31 @@ char* get_name(header_posix_ustar *tar_header);
  */
 char* get_mode(header_posix_ustar *tar_header);
 
+/**
+ * @return the size of the archive in byts
+ * ---TODO
+ */ 
 int get_size(header_posix_ustar *tar_header);
 
-int is_ustar(header_posix_ustar *tar_header);
+/**
+ * @return
+ */
+char* get_linkname(header_posix_ustar *tar_header);
+
+/**
+ * @return 0 if the tar archive is POSIX ustar standard archive.
+ */
+int is_posix_ustar(header_posix_ustar *tar_header);
+
+/**
+ * Be careful, due to the structure of the heade,
+ * calling this method will also return you the following field (the uname).
+ * So you have to get only the two first characters.
+ *
+ * @return The version of the tar archive.
+ * 
+ */
+char* get_version(header_posix_ustar *tar_header);
 
 /**
  * @param tar_header The tar header.
@@ -60,12 +86,17 @@ char* get_uname(header_posix_ustar *tar_header);
  */
 char* get_gname(header_posix_ustar *tar_header);
 
-
 /**
  * Writes in the STDOUT all information about the tar header
  * @param tar_header The tar header.
  */
 void display_header(header_posix_ustar *tar_header);
 
-#endif
+/**
+ * Method not TESTED !
+ * @return 1 if the given block is full of zeros bytes.
+ */
+int is_empty(header_posix_ustar *tar_header);
 
+
+#endif
