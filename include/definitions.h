@@ -1,5 +1,5 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
 
 /**
  * Contains all global definitions of the ptar project.

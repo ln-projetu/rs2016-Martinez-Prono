@@ -20,7 +20,7 @@ all: createArchive ptar
 %.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $(BUILDDIR)/$@
 
-ptar: header_posix_ustar.o utils.o ptar.o
+ptar: block.o header_posix_ustar.o utils.o ptar.o
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 
