@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "header_posix_ustar.h"
 #include "block.h"
+#include "Option.h"
 
 
 void read_data_block(int fd, int size_data) {
@@ -39,20 +40,27 @@ int read_tar_file(int fd) {
 	return 0;
 }
 
-int main(int argc, char const *argv[]) {
-	int statut;
-	int fd = -1;
-
-	if(argc > 1) {
-		fd = open(argv[1], O_RDONLY, 0);
+int main(int argc, char *argv[]) {
+	Option *option=create_option();
+	int statut=-1;
+	if(checkoption(argc,argv,option)==0){
 		
-		if (fd < 0)
-			statut = fd;
+		
+		int fd = -1;
 
-		statut = read_tar_file(fd);
+		if(argc > 1) {
+			fd = open(argv[argc-1], O_RDONLY, 0);
+			
+			if (fd < 0)
+				statut = fd;
+
+			statut = read_tar_file(fd);
+		}
+		else
+			statut = -1;
+			
 	}
-	else
-		statut = -1;
+	free(option);
 
 	exit(statut);
 }
