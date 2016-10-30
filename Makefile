@@ -22,7 +22,7 @@ all: createArchive ptar
 	$(CC) $(CFLAGS) $(INC) -c $< -o $(BUILDDIR)/$@
 
 
-ptar: block.o header_posix_ustar.o utils.o ptar.o
+ptar: Option.o block.o header_posix_ustar.o utils.o ptar.o
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 

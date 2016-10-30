@@ -7,15 +7,47 @@
 #include "header_posix_ustar.h"
 #include "block.h"
 #include "Option.h"
+#include <string.h>
 
+int write_file(int fd,int size_data,char filename[]){
+	char data[size_data];
+	char test[]="testwrite_";
+	strcat(filename,test);
+	read(fd, data, size_data);
+	int f2=open(filename,O_CREAT,S_IRUSR | S_IWUSR);
+	if(f2<0){
+		close(f2);
+		perror("");
+		printf("Bad Create\n");
+		return 1;
+	}
+	close(f2);
+	int fo=open(filename,O_WRONLY);
+	if(fo>=0){
+		int fw=write(fo,data,size_data);
+		if(fw<0){
+			close(fw);
+			close(fo);
+			perror("");
+			printf("Bad Write\n");
+			return 1;
+		}
+		close(fw);
+		close(fo);
+		lseek(fd,(-1)*size_data,SEEK_CUR); // Move back fd to have a right 512k block reading in write_file() method 
+	}
+	return 0;
+}
 
-void read_data_block(int fd, int size_data) {
+void read_data_block(int fd, int size_data, char filename[]) {
 	block data_bloc;
+	write_file(fd,size_data,filename);
 	while(size_data > 0) {
 		int r = read(fd, &data_bloc, BLOCK_SIZE);
 		size_data = size_data - r;
 	}
 }
+
 
 int read_tar_file(int fd) {
 	// Count zeros block at the end of file
@@ -32,7 +64,7 @@ int read_tar_file(int fd) {
 				nb_zeros_blocks++;			
 			else {								// If not then it is a data block
 				display_header(&header);				
-				read_data_block(fd, get_size(&header));
+				read_data_block(fd, get_size(&header),get_name(&header));
 			}	
 		}		
 	}
