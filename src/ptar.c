@@ -9,12 +9,20 @@
 #include "Option.h"
 #include <string.h>
 
-int write_file(int fd,int size_data,char filename[]){
+Option *option; //Global var describes launching oiption of program, maybe global var sucks
+
+
+int write_file(int fd, header_posix_ustar *header){
+	chdir("EXTRACT"); // TEST DIR
+
+	int type=get_type(header); // Get typeflag of the file
+if(type==0){ // If it's a file, we write file
+	
+	int size_data=get_size(header);
+	char* filename=get_name(header);
 	char data[size_data];
-	char test[]="testwrite_";
-	strcat(filename,test);
 	read(fd, data, size_data);
-	int f2=open(filename,O_CREAT,S_IRUSR | S_IWUSR);
+	int f2=open(filename,O_CREAT,S_IRUSR | S_IWUSR); // Create File, file rights irusr, iwusr are random for test
 	if(f2<0){
 		close(f2);
 		perror("");
@@ -32,16 +40,23 @@ int write_file(int fd,int size_data,char filename[]){
 			printf("Bad Write\n");
 			return 1;
 		}
+		fsync(fw);
 		close(fw);
 		close(fo);
-		lseek(fd,(-1)*size_data,SEEK_CUR); // Move back fd to have a right 512k block reading in write_file() method 
+		lseek(fd,(-1)*size_data,SEEK_CUR); // Move back fd to have a right 512k block reading in read_data_block() method 
 	}
+}
+else if(type==5){ // If it's a dir, we create the dir
+	printf("--------------------\nCREATED DIR\n--------------------\n\n");
+	mkdir(get_name(header), 0700); // dir rights 0700 are random for test
+	
+}
 	return 0;
 }
 
-void read_data_block(int fd, int size_data, char filename[]) {
+void read_data_block(int fd, int size_data) {
 	block data_bloc;
-	write_file(fd,size_data,filename);
+	
 	while(size_data > 0) {
 		int r = read(fd, &data_bloc, BLOCK_SIZE);
 		size_data = size_data - r;
@@ -63,8 +78,10 @@ int read_tar_file(int fd) {
 			if(is_empty(&header))
 				nb_zeros_blocks++;			
 			else {								// If not then it is a data block
-				display_header(&header);				
-				read_data_block(fd, get_size(&header),get_name(&header));
+				display_header(&header);
+				if(isx(option))
+					write_file(fd,&header);			
+				read_data_block(fd, get_size(&header));
 			}	
 		}		
 	}
@@ -73,11 +90,14 @@ int read_tar_file(int fd) {
 }
 
 int main(int argc, char *argv[]) {
-	Option *option=create_option();
+	
+	
+	option=create_option();
 	int statut=-1;
 	if(checkoption(argc,argv,option)==0){
 		
-		
+		if(isx(option))
+			mkdir("EXTRACT", 0700); //TEST DIR
 		int fd = -1;
 
 		if(argc > 1) {

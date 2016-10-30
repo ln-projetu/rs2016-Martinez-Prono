@@ -31,7 +31,7 @@ ptar: Option.o block.o header_posix_ustar.o utils.o ptar.o
 ###  Create tar archive for tests
 ### --------------------------------
 TAR = archive.tar
-FILES = README.md LICENSE
+FILES = README.md LICENSE test/
 
 createArchive:
 	@echo "# Create archive for test"

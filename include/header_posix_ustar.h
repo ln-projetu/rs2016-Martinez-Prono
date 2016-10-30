@@ -41,6 +41,8 @@ typedef struct header_posix_ustar {
  */
 char* get_name(header_posix_ustar *header);
 
+int get_type(header_posix_ustar *header);
+
 /**
  * @return Permissions of the file (octal representation).
  */
