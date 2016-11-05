@@ -30,15 +30,21 @@ void read_data_block(int fd, int size_data);
 int extract_tar(char *filename);
 
 /**
+ * calls the extract_X() method depending on the typeflag
+ */
+void extract_entry(int fd, header_posix_ustar *header);
+
+/**
  * Extract a regular file in the tarball.
  * @param header The header of the regular file.
  */
 void extract_regular_file(int fd, header_posix_ustar *header);
 
 /**
- * calls the extract_X() method depending on the typeflag
+ * Extract the directory in the tarball. More precisly,
+ * this method create only the directory.
  */
-void extract_entry(int fd, header_posix_ustar *header);
+void extract_directory(int fd, header_posix_ustar *header);
 
 
 #endif

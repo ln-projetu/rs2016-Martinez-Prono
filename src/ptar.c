@@ -63,8 +63,20 @@ int extract_tar(char *filename) {
 				extract_entry(fd, header);
 			}
 		}
+		free(header);
 	}
+
 	return 0;
+}
+
+void extract_entry(int fd, header_posix_ustar *header) {
+	printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
+
+	if(is_regular_file(header))
+		extract_regular_file(fd, header);
+
+	if(is_directory(header))
+		extract_directory(fd, header);
 }
 
 void extract_regular_file(int fd, header_posix_ustar *header) {
@@ -83,23 +95,6 @@ void extract_regular_file(int fd, header_posix_ustar *header) {
 }
 
 void extract_directory(int fd, header_posix_ustar *header) {
-	block data_bloc;
 	mkdir(get_name(header), 0755);
-	display_header(header);
-
-/*	while (size_data > 0) {
-		r = read(fd, &data_bloc, BLOCK_SIZE);
-		write(out, &data_bloc, size_data > BLOCK_SIZE ? BLOCK_SIZE: size_data);
-		size_data = size_data - r;
-	}*/
-}
-
-void extract_entry(int fd, header_posix_ustar *header) {
-	printf("Extract entry '%s' -> %c\n", get_name(header), get_type(header));
-
-	if(is_regular_file(header))
-		extract_regular_file(fd, header);
-
-	if(is_directory(header))
-		extract_directory(fd, header);
+	// No data to read after the header of a directory.
 }
