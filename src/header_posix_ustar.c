@@ -7,12 +7,11 @@
 
 
 char* get_name(header_posix_ustar *header) {
-	return header->name;	
+	return header->name;
 }
 
-int get_type(header_posix_ustar *header){
-	return atoi(header->typeflag);
-	
+char get_type(header_posix_ustar *header){
+	return header->typeflag;
 };
 
 char* get_mode(header_posix_ustar *header) {
@@ -27,7 +26,7 @@ int get_gid(header_posix_ustar *header) {
 	return octal_to_integer(atoi(header->gid));
 }
 
-int get_size(header_posix_ustar *header) {	
+int get_size(header_posix_ustar *header) {
 	return octal_to_integer(atoi(header->size));
 }
 
@@ -66,9 +65,17 @@ int is_empty(header_posix_ustar *header) {
 		return 0;
 }
 
+int is_regular_file(header_posix_ustar *header) {
+	return get_type(header) == REGFILE;
+}
+
+int is_directory(header_posix_ustar *header) {
+	return get_type(header) == DIR;
+}
+
 void display_header(header_posix_ustar *header) {
 	printf("%s\n", get_name(header));
-	printf(" - type %s %d\n", OUTPUT_SEPARATOR,  get_type(header));
+	printf(" - type %s %c\n", OUTPUT_SEPARATOR,  get_type(header));
 	printf(" - mode %s %s\n", OUTPUT_SEPARATOR,  get_mode(header));
 	printf(" - uid %s %d\n", OUTPUT_SEPARATOR,  get_uid(header));
 	printf(" - gid %s %d\n", OUTPUT_SEPARATOR,  get_gid(header));

@@ -14,7 +14,7 @@ $(shell mkdir -p $(BUILDDIR))
 $(shell mkdir -p bin)
 
 
-all: createArchive ptar
+all: createArchive build
 
 
 # Generic task
@@ -22,18 +22,35 @@ all: createArchive ptar
 	$(CC) $(CFLAGS) $(INC) -c $< -o $(BUILDDIR)/$@
 
 
-ptar: Option.o block.o header_posix_ustar.o utils.o ptar.o
+main: Option.o block.o header_posix_ustar.o utils.o ptar.o main.o
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
+
+build: main
+
+
+valgrind: build
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v $(TARGET)
 
 
 ### --------------------------------
 ###  Create tar archive for tests
 ### --------------------------------
 TAR = archive.tar
-FILES = README.md LICENSE test/
+FILES = file1 file2 test/
 
-createArchive:
+deleteFiles:
+	@rm -rf $(FILES)
+	@rm -rf $(TAR)
+
+createFiles: deleteFiles
+	@echo "my first file!" > file1
+	@echo "my second file!" > file2
+	@mkdir ./test
+	@echo "lol" > ./test/file
+
+createArchive: createFiles
 	@echo "# Create archive for test"
 	tar --format=ustar -cf $(TAR) $(FILES)
 	@echo
+	@rm -r $(FILES)

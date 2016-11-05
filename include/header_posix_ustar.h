@@ -5,11 +5,13 @@
 #include "utils.h"
 #define USTAR "ustar\x00"
 #define VERSION "00"
+#define REGFILE '0'
+#define DIR '5'
 
 
 /**
  * Structure for the POSIX ustar archive header.
- * 
+ *
  *	@author Lucas MARTINEZ
  *	@author Yann PRONO
  */
@@ -23,13 +25,13 @@ typedef struct header_posix_ustar {
 	char size[12];			// Size of file			octal number in ASCII
 	char mtime[12];			// Modification time	octal number in ASCII
 	char checksum[8];		// Checksum 			octal number in ASCII
-	char typeflag[1];		// Type of entry		octal number in ASCII
+	char typeflag;		  	// Type of entry		octal number in ASCII
 	char linkname[100];		//
 	char magic[6];			// "ustar"				Followed by NUL byte
 	char version[2];		// "00"					ASCII digit zero
 	char uname[32];			// User name  			Null-terminated ASCII strings
 	char gname[32];			// Group name			Null-terminated ASCII strings
-	char devmajor[8];		// Device major number	
+	char devmajor[8];		// Device major number
 	char devminor[8];		// Device minor number
 	char prefix[155];		// Prefix if filename to long
 	char pad[12];			// ???
@@ -41,7 +43,11 @@ typedef struct header_posix_ustar {
  */
 char* get_name(header_posix_ustar *header);
 
-int get_type(header_posix_ustar *header);
+/**
+ * @return the typeflag of the header
+ * @TODO we manage only regular files and directory for the moment...
+ */
+char get_type(header_posix_ustar *header);
 
 /**
  * @return Permissions of the file (octal representation).
@@ -60,7 +66,7 @@ int get_gid(header_posix_ustar *header);
 
 /**
  * @return the size of the file in bytes.
- */ 
+ */
 int get_size(header_posix_ustar *header);
 
 /**
@@ -89,7 +95,7 @@ int is_posix_ustar(header_posix_ustar *header);
  * So you have to get only the two first characters.
  *
  * @return The version of the tar header.
- * 
+ *
  */
 char* get_version(header_posix_ustar *header);
 
@@ -114,6 +120,16 @@ void display_header(header_posix_ustar *header);
  * @return 1 if the given block is full of zeros bytes.
  */
 int is_empty(header_posix_ustar *header);
+
+/**
+ * @return 1 if this header represents a regular file => '0'
+ */
+int is_regular_file(header_posix_ustar *header);
+
+/**
+ * @return 1 if the given header represents a directory => '5'
+ */
+int is_directory(header_posix_ustar *header);
 
 
 #endif

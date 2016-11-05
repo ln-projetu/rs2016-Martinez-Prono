@@ -6,7 +6,7 @@
 
 /**
  * Header file representing a data block of 512 bytes.
- * 
+ *
  * @author Lucas MARTINEZ
  * @author Yann PRONO
  */
