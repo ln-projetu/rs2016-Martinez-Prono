@@ -17,8 +17,10 @@ int main(int argc, char *argv[]) {
 	Option *options;
 	// First of all, check enabled options
 	options = create_option();
-	if (checkoption(argc, argv, options) == 0) {
 
+	read_tar_file(open_tar(argv[argc - 1]));
+	
+	if (checkoption(argc, argv, options) == 0) {
 		// Extract tarball
 		if (isx(options))
 			extract_tar(argv[argc - 1]);

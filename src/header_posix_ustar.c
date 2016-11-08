@@ -3,6 +3,7 @@
 #include <string.h>
 #include "header_posix_ustar.h"
 #include "block.h"
+#include "utils.h"
 #define OUTPUT_SEPARATOR "->"
 
 
@@ -14,16 +15,16 @@ char get_type(header_posix_ustar *header){
 	return header->typeflag;
 };
 
-char* get_mode(header_posix_ustar *header) {
-	return header->mode;
+mode_t get_mode(header_posix_ustar *header) {
+	return (mode_t) octal_to_integer((atoi(header->mode)));
 }
 
-int get_uid(header_posix_ustar *header) {
-	return octal_to_integer(atoi(header->uid));
+uid_t get_uid(header_posix_ustar *header) {
+	return (uid_t) octal_to_integer(atoi(header->uid));
 }
 
-int get_gid(header_posix_ustar *header) {
-	return octal_to_integer(atoi(header->gid));
+gid_t get_gid(header_posix_ustar *header) {
+	return (gid_t) octal_to_integer(atoi(header->gid));
 }
 
 int get_size(header_posix_ustar *header) {
@@ -75,11 +76,11 @@ int is_directory(header_posix_ustar *header) {
 
 void display_header(header_posix_ustar *header) {
 	printf("%s\n", get_name(header));
-	printf(" - type %s %c\n", OUTPUT_SEPARATOR,  get_type(header));
-	printf(" - mode %s %s\n", OUTPUT_SEPARATOR,  get_mode(header));
-	printf(" - uid %s %d\n", OUTPUT_SEPARATOR,  get_uid(header));
-	printf(" - gid %s %d\n", OUTPUT_SEPARATOR,  get_gid(header));
-	printf(" - size %s %d bytes\n", OUTPUT_SEPARATOR,  get_size(header));
+	printf(" - type %s %c\n", OUTPUT_SEPARATOR, get_type(header));
+	printf(" - mode %s %d \n", OUTPUT_SEPARATOR, atoi(header->mode));
+	printf(" - uid %s %d\n", OUTPUT_SEPARATOR, get_uid(header));
+	printf(" - gid %s %d\n", OUTPUT_SEPARATOR, get_gid(header));
+	printf(" - size %s %d bytes\n", OUTPUT_SEPARATOR, get_size(header));
 	printf(" - mtime %s %d seconds since the start of epoch (1970)\n", OUTPUT_SEPARATOR, get_mtime(header));
 	printf(" - checksum %s %d\n", OUTPUT_SEPARATOR, get_checksum(header));
 	printf(" - linkname %s %s\n", OUTPUT_SEPARATOR,  get_linkname(header));

@@ -1,6 +1,7 @@
 #ifndef HEADER_POSIX_UPSTAR_H
 #define HEADER_POSIX_UPSTAR_H
 
+#include <sys/stat.h>
 #include "definitions.h"
 #include "utils.h"
 #define USTAR "ustar\x00"
@@ -52,17 +53,17 @@ char get_type(header_posix_ustar *header);
 /**
  * @return Permissions of the file (octal representation).
  */
-char* get_mode(header_posix_ustar *header);
+mode_t get_mode(header_posix_ustar *header);
 
 /**
  * @return The user ID of this file (decimal).
  */
-int get_uid(header_posix_ustar *header);
+uid_t get_uid(header_posix_ustar *header);
 
 /**
  * @return The group ID of this file (decimal).
  */
-int get_gid(header_posix_ustar *header);
+gid_t get_gid(header_posix_ustar *header);
 
 /**
  * @return the size of the file in bytes.

@@ -84,7 +84,12 @@ void extract_regular_file(int fd, header_posix_ustar *header) {
 	int r = 0;
 	int out = open(get_name(header),  O_CREAT | O_WRONLY, 0755);
 	int size_data = get_size(header);
+	
+	// Need maybe tu put these lines of code in a function...
+	fchmod(out, get_mode(header));
+	fchown(out, get_uid(header), get_gid(header));
 
+//	header
 	while (size_data > 0) {
 		r = read(fd, &data_bloc, BLOCK_SIZE);
 		write(out, &data_bloc, size_data > BLOCK_SIZE ? BLOCK_SIZE: size_data);
