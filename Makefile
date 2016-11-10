@@ -5,7 +5,7 @@ OBJ = $(wildcard $(BUILDDIR)/*.o)
 
 INC = -I $(INCDIR)
 CC = gcc
-CFLAGS = -g -pthread
+CFLAGS = -g -Wall
 
 PGM = ptar
 TARGET = ./$(PGM)

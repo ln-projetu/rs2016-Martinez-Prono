@@ -47,7 +47,7 @@ void read_data_block(int fd, int size_data) {
 
 int extract_tar(char *filename) {
 	int nb_zeros_blocks = 0;		// Count zeros block at the end of file
-	int i;
+	
 	int fd = open_tar(filename);
 
 	if(fd != -1) {
@@ -79,23 +79,30 @@ void extract_entry(int fd, header_posix_ustar *header) {
 		extract_directory(fd, header);
 }
 
+void move_next_512b(int fd, int size){
+	int i=0;
+
+	while(i*512<=size){
+		i++;
+	}
+	lseek(fd,i*512-size,SEEK_CUR);
+}
+
 void extract_regular_file(int fd, header_posix_ustar *header) {
-	block data_bloc;
-	int r = 0;
+	
+
 	int out = open(get_name(header),  O_CREAT | O_WRONLY, 0755);
 	int size_data = get_size(header);
-	
+
+	char * data= (char *)malloc(sizeof(char)*size_data);
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
 
-//	header
-	while (size_data > 0) {
-		r = read(fd, &data_bloc, BLOCK_SIZE);
-		write(out, &data_bloc, size_data > BLOCK_SIZE ? BLOCK_SIZE: size_data);
-		size_data = size_data - r;
-	}
-
+	
+	read(fd, data, size_data);
+	write(out, data,size_data);
+	move_next_512b(fd,size_data);
 	close(out);
 }
 
