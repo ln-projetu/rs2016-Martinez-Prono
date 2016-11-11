@@ -5,13 +5,14 @@
 #include "block.h"
 #include "utils.h"
 #define OUTPUT_SEPARATOR "->"
+#define BUF_SIZE 60
 
 
 char* get_name(header_posix_ustar *header) {
 	return header->name;
 }
 
-char get_type(header_posix_ustar *header){
+char get_type(header_posix_ustar *header) {
 	return header->typeflag;
 };
 
@@ -60,7 +61,7 @@ char* get_gname(header_posix_ustar *header) {
 }
 
 int is_empty(header_posix_ustar *header) {
-	if(header->name[0] == '\0')
+	if (header->name[0] == '\0')
 		return 1;
 	else
 		return 0;
@@ -74,10 +75,85 @@ int is_directory(header_posix_ustar *header) {
 	return get_type(header) == DIR;
 }
 
+char* print_as_list(header_posix_ustar *header) {
+	char right[11] = {'-' , '-' , '-' , '-' , '-' , '-' , '-' , '-' , '-', '-'};
+
+	char uid[10];
+	sprintf(uid, "%d", get_uid(header));
+
+	char gid[10];
+	sprintf(gid, "%d", get_gid(header));
+
+	char size[20];
+	sprintf(size, "%d", get_size(header));
+
+	char *finalstrng = (char*)malloc(sizeof(char) * BUF_SIZE);
+
+	char buf[2];
+	buf[0] = (header->mode)[4];
+	int ow = strtol(buf, NULL, 10);
+
+	buf[0] = (header->mode)[5];
+	int gr = strtol(buf, NULL, 10);
+
+	buf[0] = (header->mode)[6];
+	int oth = strtol(buf, NULL, 10);
+
+	int mode[3] = {ow, gr, oth};
+
+	int i;
+	for (i = 0; i < 3; i++) {
+		switch (mode[i]) {
+
+		case 1:
+			right[i * 3 + 3] = 'x';
+			break;
+		case 2:
+			right[i * 3 + 2] = 'w';
+			break;
+		case 3:
+			right[i * 3 + 1] = 'r';
+			right[i * 3 + 2] = 'w';
+			break;
+		case 4:
+			right[i * 3 + 1] = 'r';
+			break;
+		case 5:
+			right[i * 3 + 1] = 'r';
+			right[i * 3 + 3] = 'x';
+			break;
+		case 6:
+			right[i * 3 + 1] = 'r';
+			right[i * 3 + 2] = 'w';
+			break;
+		case 7:
+			right[i * 3 + 1] = 'r';
+			right[i * 3 + 2] = 'w';
+			right[i * 3 + 3] = 'x';
+			break;
+
+		}
+	}
+
+	if (get_type(header) == '5')
+		right[0] = 'd';
+
+	snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", get_name(header));
+
+
+	return finalstrng;
+}
+
+header_posix_ustar* create_header() {
+	header_posix_ustar* ptr = (header_posix_ustar*)malloc(sizeof(header_posix_ustar));
+	return ptr;
+}
+
 void display_header(header_posix_ustar *header) {
 	printf("%s\n", get_name(header));
 	printf(" - type %s %c\n", OUTPUT_SEPARATOR, get_type(header));
 	printf(" - mode %s %d \n", OUTPUT_SEPARATOR, atoi(header->mode));
+	printf(" - CHAINE LIST %s %s \n", OUTPUT_SEPARATOR, print_as_list(header));
 	printf(" - uid %s %d\n", OUTPUT_SEPARATOR, get_uid(header));
 	printf(" - gid %s %d\n", OUTPUT_SEPARATOR, get_gid(header));
 	printf(" - size %s %d bytes\n", OUTPUT_SEPARATOR, get_size(header));

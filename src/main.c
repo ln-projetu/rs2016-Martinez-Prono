@@ -10,18 +10,17 @@
  * @author Lucas MARTINEZ
  * @author Yann PRONO
  */
+Option *options;
 
 
 int main(int argc, char *argv[]) {
 	int statut = -1;
-	Option *options;
+	
 	// First of all, check enabled options
 	options = create_option();
 
-	read_tar_file(open_tar(argv[argc - 1]));
-	
 	if (checkoption(argc, argv, options) == 0) {
-		// Extract tarball
+		read_tar_file(open_tar(argv[argc - 1]));
 		if (isx(options))
 			extract_tar(argv[argc - 1]);
 	}

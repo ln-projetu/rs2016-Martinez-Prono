@@ -44,6 +44,10 @@ typedef struct header_posix_ustar {
  */
 char* get_name(header_posix_ustar *header);
 
+char* print_as_list(header_posix_ustar *header);
+
+header_posix_ustar* create_header();
+
 /**
  * @return the typeflag of the header
  * @TODO we manage only regular files and directory for the moment...
