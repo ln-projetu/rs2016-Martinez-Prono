@@ -136,10 +136,12 @@ char* print_as_list(header_posix_ustar *header) {
 		}
 	}
 
-	
+
 
 	if (get_type(header) == '5')
 		right[0] = 'd';
+	if (get_type(header) == '2')
+		right[0] = 'l';
 
 	char date[30];
 
@@ -148,8 +150,13 @@ char* print_as_list(header_posix_ustar *header) {
 
 	strftime(date, 30, "%Y-%m-%d %X", &time);
 
-	snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", date, " ", get_name(header));
+	if (get_type(header) == '2') {
+		snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", date, " ", get_name(header),"->",get_linkname(header));
 
+	}
+	else {
+		snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", date, " ",get_name(header));
+	}
 
 	return finalstrng;
 }

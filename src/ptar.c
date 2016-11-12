@@ -26,7 +26,7 @@ int read_tar_file(int fd) {
 
 	while ((i = read(fd, header, BLOCK_SIZE)) == BLOCK_SIZE) {
 
-		if (nb_zeros_blocks >= 2){				// Is it end of tar file ?
+		if (nb_zeros_blocks >= 2) {				// Is it end of tar file ?
 			free(header);
 			return 0;
 		}
@@ -40,7 +40,7 @@ int read_tar_file(int fd) {
 					printf("%s\n", buf);
 					free(buf);
 				}
-				else{
+				else {
 					printf("%s\n", get_name(header)); // If not then it is a data block
 					//display_header(header);
 				}
@@ -122,6 +122,6 @@ void extract_directory(int fd, header_posix_ustar *header) {
 	// No data to read after the header of a directory.
 }
 
-void create_tar_dir(char *name_tar){
+void create_tar_dir(char *name_tar) {
 
 }

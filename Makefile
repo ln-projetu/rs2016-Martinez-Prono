@@ -37,7 +37,7 @@ valgrind: build
 ###  Create tar archive for tests
 ### --------------------------------
 TAR = archive.tar
-FILES = file1 file2 test/
+FILES = file1 file2 link1 test/
 
 deleteFiles:
 	@rm -rf $(FILES)
@@ -46,6 +46,7 @@ deleteFiles:
 createFiles: deleteFiles
 	@echo "my first file!" > file1
 	@echo "my second file!" > file2
+	@ln file1 link1 --symbolic
 	@mkdir ./test
 	@echo "lol" > ./test/file
 
