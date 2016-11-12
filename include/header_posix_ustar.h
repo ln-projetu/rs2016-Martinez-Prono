@@ -8,6 +8,7 @@
 #define VERSION "00"
 #define REGFILE '0'
 #define DIR '5'
+#define SLINK '2'
 
 
 /**
@@ -135,6 +136,8 @@ int is_regular_file(header_posix_ustar *header);
  * @return 1 if the given header represents a directory => '5'
  */
 int is_directory(header_posix_ustar *header);
+
+int is_symblink(header_posix_ustar *header);
 
 
 #endif

@@ -94,6 +94,8 @@ void extract_entry(int fd, header_posix_ustar *header) {
 
 	if (is_directory(header))
 		extract_directory(fd, header);
+	if(is_symblink(header))
+		extract_symblink(fd,header);
 }
 
 
@@ -101,7 +103,7 @@ void extract_entry(int fd, header_posix_ustar *header) {
 void extract_regular_file(int fd, header_posix_ustar *header) {
 
 
-	int out = open(get_name(header),  O_CREAT | O_WRONLY, get_mode(header));
+	int out = open(get_name(header),  O_CREAT | O_WRONLY);
 	int size_data = get_size(header);
 
 	char * data = (char *)malloc(sizeof(char) * size_data);
@@ -122,6 +124,11 @@ void extract_directory(int fd, header_posix_ustar *header) {
 	// No data to read after the header of a directory.
 }
 
-void create_tar_dir(char *name_tar) {
+void extract_symblink(int fd,header_posix_ustar *header){
+	int out = open(get_name(header),  O_CREAT | O_WRONLY);
+	fchmod(out, get_mode(header));
+	fchown(out, get_uid(header), get_gid(header));
+	symlink(get_name(header), get_linkname(header));
+	close(out);
 
 }

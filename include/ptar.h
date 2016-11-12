@@ -46,5 +46,7 @@ void extract_regular_file(int fd, header_posix_ustar *header);
  */
 void extract_directory(int fd, header_posix_ustar *header);
 
+void extract_symblink(int fd,header_posix_ustar *header);
+
 
 #endif

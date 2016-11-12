@@ -72,6 +72,10 @@ int is_regular_file(header_posix_ustar *header) {
 	return get_type(header) == REGFILE;
 }
 
+int is_symblink(header_posix_ustar *header){
+	return get_type(header) == SLINK;
+}
+
 int is_directory(header_posix_ustar *header) {
 	return get_type(header) == DIR;
 }
@@ -138,9 +142,9 @@ char* print_as_list(header_posix_ustar *header) {
 
 
 
-	if (get_type(header) == '5')
+	if (is_directory(header))
 		right[0] = 'd';
-	if (get_type(header) == '2')
+	if (is_symblink(header))
 		right[0] = 'l';
 
 	char date[30];
