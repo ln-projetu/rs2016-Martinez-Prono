@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "header_posix_ustar.h"
 #include "block.h"
 #include "utils.h"
 #define OUTPUT_SEPARATOR "->"
-#define BUF_SIZE 60
+#define BUF_SIZE 250
 
 
 char* get_name(header_posix_ustar *header) {
@@ -32,8 +33,8 @@ int get_size(header_posix_ustar *header) {
 	return octal_to_integer(atoi(header->size));
 }
 
-int get_mtime(header_posix_ustar *header) {
-	return octal_to_integer(atoi(header->mtime));
+time_t get_mtime(header_posix_ustar *header) {
+	return (time_t)octal_to_integer(atoi(header->mtime));
 }
 
 int get_checksum(header_posix_ustar *header) {
@@ -78,13 +79,13 @@ int is_directory(header_posix_ustar *header) {
 char* print_as_list(header_posix_ustar *header) {
 	char right[11] = {'-' , '-' , '-' , '-' , '-' , '-' , '-' , '-' , '-', '-'};
 
-	char uid[10];
+	char uid[8];
 	sprintf(uid, "%d", get_uid(header));
 
-	char gid[10];
+	char gid[8];
 	sprintf(gid, "%d", get_gid(header));
 
-	char size[20];
+	char size[12];
 	sprintf(size, "%d", get_size(header));
 
 	char *finalstrng = (char*)malloc(sizeof(char) * BUF_SIZE);
@@ -135,16 +136,25 @@ char* print_as_list(header_posix_ustar *header) {
 		}
 	}
 
+	
+
 	if (get_type(header) == '5')
 		right[0] = 'd';
 
-	snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", get_name(header));
+	char date[30];
+
+	time_t ti = get_mtime(header);
+	struct tm time = *localtime(&ti);
+
+	strftime(date, 30, "%Y-%m-%d %X", &time);
+
+	snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", date, " ", get_name(header));
 
 
 	return finalstrng;
 }
 
-header_posix_ustar* create_header() {
+header_posix_ustar *create_header() {
 	header_posix_ustar* ptr = (header_posix_ustar*)malloc(sizeof(header_posix_ustar));
 	return ptr;
 }
@@ -157,7 +167,7 @@ void display_header(header_posix_ustar *header) {
 	printf(" - uid %s %d\n", OUTPUT_SEPARATOR, get_uid(header));
 	printf(" - gid %s %d\n", OUTPUT_SEPARATOR, get_gid(header));
 	printf(" - size %s %d bytes\n", OUTPUT_SEPARATOR, get_size(header));
-	printf(" - mtime %s %d seconds since the start of epoch (1970)\n", OUTPUT_SEPARATOR, get_mtime(header));
+	printf(" - mtime %s %li seconds since the start of epoch (1970)\n", OUTPUT_SEPARATOR, (long)get_mtime(header));
 	printf(" - checksum %s %d\n", OUTPUT_SEPARATOR, get_checksum(header));
 	printf(" - linkname %s %s\n", OUTPUT_SEPARATOR,  get_linkname(header));
 	printf(" - is USTAR? %s %d\n", OUTPUT_SEPARATOR,  is_posix_ustar(header));

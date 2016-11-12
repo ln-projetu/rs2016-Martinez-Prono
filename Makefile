@@ -30,7 +30,7 @@ build: main
 
 
 valgrind: build
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v $(TARGET)
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v $(TARGET) archive.tar
 
 
 ### --------------------------------

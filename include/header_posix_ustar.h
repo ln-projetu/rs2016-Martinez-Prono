@@ -77,7 +77,7 @@ int get_size(header_posix_ustar *header);
 /**
  * @return the modification time of the file.
  */
-int get_mtime(header_posix_ustar *header);
+time_t get_mtime(header_posix_ustar *header);
 
 /**
  * @return the checksum of the file.
