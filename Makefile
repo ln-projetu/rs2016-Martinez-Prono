@@ -5,7 +5,7 @@ OBJ = $(wildcard $(BUILDDIR)/*.o)
 
 INC = -I $(INCDIR)
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -DDEBUG=0
 
 PGM = ptar
 TARGET = ./$(PGM)
@@ -46,7 +46,7 @@ deleteFiles:
 createFiles: deleteFiles
 	@echo "my first file!" > file1
 	@echo "my second file!" > file2
-	@ln file1 link1 --symbolic
+	@ln -s file1 link1
 	@mkdir ./test
 	@echo "lol" > ./test/file
 

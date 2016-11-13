@@ -87,7 +87,10 @@ int extract_tar(char *filename) {
 }
 
 void extract_entry(int fd, header_posix_ustar *header) {
-	printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
+	if(DEBUG)
+		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
+
+
 
 	if (is_regular_file(header))
 		extract_regular_file(fd, header);
