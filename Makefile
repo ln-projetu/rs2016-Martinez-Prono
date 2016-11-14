@@ -5,7 +5,11 @@ OBJ = $(wildcard $(BUILDDIR)/*.o)
 
 INC = -I $(INCDIR)
 CC = gcc
+ifeq ($(DEBUG),1)
+CFLAGS = -g -Wall -DDEBUG=1
+else
 CFLAGS = -g -Wall -DDEBUG=0
+endif
 
 PGM = ptar
 TARGET = ./$(PGM)

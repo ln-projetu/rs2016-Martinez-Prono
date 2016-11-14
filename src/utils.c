@@ -15,6 +15,18 @@ int octal_to_integer(int octal) {
     return res;
 }
 
+int octallong_to_integer(long octal){
+	long res = 0;
+	long coef = 1;
+	while(octal != 0) {
+		res = res + (octal % 10) * coef;
+		octal = octal/10;
+		coef  = coef * 8;
+    }
+
+    return (int)res;
+}
+
 void move_next_512b(int fd, int size, int write_mode) {
 	int i = 0;
 

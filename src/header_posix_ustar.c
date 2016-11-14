@@ -34,7 +34,7 @@ int get_size(header_posix_ustar *header) {
 }
 
 time_t get_mtime(header_posix_ustar *header) {
-	return (time_t)octal_to_integer(atoi(header->mtime));
+	return (time_t)octallong_to_integer(atol(header->mtime));
 }
 
 int get_checksum(header_posix_ustar *header) {
@@ -44,6 +44,7 @@ int get_checksum(header_posix_ustar *header) {
 char* get_linkname(header_posix_ustar *header) {
 	return header->linkname;
 }
+
 
 int is_posix_ustar(header_posix_ustar *header) {
 	return strcmp(header->magic, USTAR) == 0;
@@ -178,7 +179,7 @@ void display_header(header_posix_ustar *header) {
 	printf(" - uid %s %d\n", OUTPUT_SEPARATOR, get_uid(header));
 	printf(" - gid %s %d\n", OUTPUT_SEPARATOR, get_gid(header));
 	printf(" - size %s %d bytes\n", OUTPUT_SEPARATOR, get_size(header));
-	printf(" - mtime %s %li seconds since the start of epoch (1970)\n", OUTPUT_SEPARATOR, (long)get_mtime(header));
+	printf(" - mtime %s %d seconds since the start of epoch (1970)\n", OUTPUT_SEPARATOR,(int)get_mtime(header));
 	printf(" - checksum %s %d\n", OUTPUT_SEPARATOR, get_checksum(header));
 	printf(" - linkname %s %s\n", OUTPUT_SEPARATOR,  get_linkname(header));
 	printf(" - is USTAR? %s %d\n", OUTPUT_SEPARATOR,  is_posix_ustar(header));

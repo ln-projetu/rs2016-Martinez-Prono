@@ -80,7 +80,9 @@ int get_size(header_posix_ustar *header);
  */
 time_t get_mtime(header_posix_ustar *header);
 
-/**
+/** 13012327134
+ *   1479126620
+ *    127425489
  * @return the checksum of the file.
  */
 int get_checksum(header_posix_ustar *header);

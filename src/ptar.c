@@ -44,6 +44,8 @@ int read_tar_file(int fd) {
 					printf("%s\n", get_name(header)); // If not then it is a data block
 					//display_header(header);
 				}
+				if(DEBUG)
+					display_header(header);
 
 				move_next_512b(fd, get_size(header), 0);
 			}
