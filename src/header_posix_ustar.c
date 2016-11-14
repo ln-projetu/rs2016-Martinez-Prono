@@ -172,10 +172,11 @@ header_posix_ustar *create_header() {
 }
 
 void display_header(header_posix_ustar *header) {
+	char *buf = print_as_list(header);
 	printf("%s\n", get_name(header));
 	printf(" - type %s %c\n", OUTPUT_SEPARATOR, get_type(header));
 	printf(" - mode %s %d \n", OUTPUT_SEPARATOR, atoi(header->mode));
-	printf(" - CHAINE LIST %s %s \n", OUTPUT_SEPARATOR, print_as_list(header));
+	printf(" - CHAINE LIST %s %s \n", OUTPUT_SEPARATOR, buf);
 	printf(" - uid %s %d\n", OUTPUT_SEPARATOR, get_uid(header));
 	printf(" - gid %s %d\n", OUTPUT_SEPARATOR, get_gid(header));
 	printf(" - size %s %d bytes\n", OUTPUT_SEPARATOR, get_size(header));
@@ -186,4 +187,5 @@ void display_header(header_posix_ustar *header) {
 	printf(" - version %s %c%c\n", OUTPUT_SEPARATOR, get_version(header)[0], get_version(header)[1]);
 	printf(" - uname %s %s\n", OUTPUT_SEPARATOR, get_uname(header));
 	printf(" - gname %s %s\n\n", OUTPUT_SEPARATOR,  get_gname(header));
+	free(buf);
 }

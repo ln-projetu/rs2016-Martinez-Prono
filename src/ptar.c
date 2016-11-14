@@ -11,6 +11,9 @@
 #include "block.h"
 #include "utils.h"
 #include "Option.h"
+#include <utime.h>
+#include <time.h>
+
 
 extern Option *options;
 
@@ -103,10 +106,20 @@ void extract_entry(int fd, header_posix_ustar *header) {
 		extract_symblink(fd,header);
 }
 
+void change_date_file(char* name, time_t mtime){
+
+	time_t time_now;
+	time(&time_now);
+	struct utimbuf *date=(struct utimbuf*)malloc(sizeof(struct utimbuf));
+	date->actime=time_now;
+	date->modtime=mtime;
+	utime(name,date);
+
+	free(date);
+}
 
 
 void extract_regular_file(int fd, header_posix_ustar *header) {
-
 
 	int out = open(get_name(header),  O_CREAT | O_WRONLY);
 	int size_data = get_size(header);
@@ -115,25 +128,34 @@ void extract_regular_file(int fd, header_posix_ustar *header) {
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
-
-
+	
 	read(fd, data, size_data);
 	write(out, data, size_data);
+	change_date_file(get_name(header),get_mtime(header));
+	
 	move_next_512b(fd, size_data, 1);
+
 	free(data);
 	close(out);
 }
 
 void extract_directory(int fd, header_posix_ustar *header) {
 	mkdir(get_name(header), get_mode(header));
+	int out = open(get_name(header),  O_CREAT | O_WRONLY);
+	fchown(out, get_uid(header), get_gid(header));
+	change_date_file(get_name(header),get_mtime(header));
+	close(out);
 	// No data to read after the header of a directory.
 }
 
 void extract_symblink(int fd,header_posix_ustar *header){
-	int out = open(get_name(header),  O_CREAT | O_WRONLY);
+	
+
+	symlink(get_linkname(header),get_name(header));
+	int out = open(get_name(header),O_WRONLY);
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
-	symlink(get_name(header), get_linkname(header));
+	change_date_file(get_name(header),get_mtime(header));
 	close(out);
 
 }

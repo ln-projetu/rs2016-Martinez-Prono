@@ -16,6 +16,8 @@ int open_tar(char* filename);
  */
 int read_tar_file(int fd);
 
+void change_date_file(char* name, time_t mtime);
+
 /**
  * Read the contents of a entry in the tar file.
  * @param fd File descriptor of this tarball.
