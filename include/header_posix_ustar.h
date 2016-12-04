@@ -78,7 +78,7 @@ int get_size(header_posix_ustar *header);
 /**
  * @return the modification time of the file.
  */
-time_t get_mtime(header_posix_ustar *header);
+long get_mtime(header_posix_ustar *header);
 
 /** 13012327134
  *   1479126620

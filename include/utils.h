@@ -13,8 +13,8 @@
 /**
  * @return the decimal value of an octal value.
  */
-int octal_to_integer(int octal);
-int octallong_to_integer(long octal);
+int octal_to_integer(long octal);
+
 void move_next_512b(int fd, int size, int write_mode);
 
 #endif

@@ -3,7 +3,7 @@
 #include "utils.h"
 
 
-int octal_to_integer(int octal) {
+/*int octal_to_integer(int octal) {
 	int res = 0;
 	int coef = 1;
 	while(octal != 0) {
@@ -13,9 +13,9 @@ int octal_to_integer(int octal) {
     }
 
     return res;
-}
+}*/
 
-int octallong_to_integer(long octal){
+int octal_to_integer(long octal){
 	long res = 0;
 	long coef = 1;
 	while(octal != 0) {

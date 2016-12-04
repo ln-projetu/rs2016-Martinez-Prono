@@ -18,7 +18,7 @@ $(shell mkdir -p $(BUILDDIR))
 $(shell mkdir -p bin)
 
 
-all: createArchive build
+all: build
 
 
 # Generic task

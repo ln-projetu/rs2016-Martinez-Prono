@@ -95,8 +95,6 @@ void extract_entry(int fd, header_posix_ustar *header) {
 	if(DEBUG)
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
 
-
-
 	if (is_regular_file(header))
 		extract_regular_file(fd, header);
 
@@ -106,16 +104,11 @@ void extract_entry(int fd, header_posix_ustar *header) {
 		extract_symblink(fd,header);
 }
 
-void change_date_file(char* name, time_t mtime){
-
-	time_t time_now;
-	time(&time_now);
-	struct utimbuf *date=(struct utimbuf*)malloc(sizeof(struct utimbuf));
-	date->actime=time_now;
-	date->modtime=mtime;
-	utime(name,date);
-
-	free(date);
+void change_date_file(char* name, long seconds){
+	struct utimbuf t;
+ 	time(&t.actime);
+	t.modtime = seconds;
+	utime(name, &t);
 }
 
 
@@ -128,11 +121,11 @@ void extract_regular_file(int fd, header_posix_ustar *header) {
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
-	
+
 	read(fd, data, size_data);
 	write(out, data, size_data);
-	change_date_file(get_name(header),get_mtime(header));
-	
+	change_date_file(get_name(header), get_mtime(header));
+
 	move_next_512b(fd, size_data, 1);
 
 	free(data);
@@ -149,13 +142,10 @@ void extract_directory(int fd, header_posix_ustar *header) {
 }
 
 void extract_symblink(int fd,header_posix_ustar *header){
-	
-
 	symlink(get_linkname(header),get_name(header));
 	int out = open(get_name(header),O_WRONLY);
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
 	change_date_file(get_name(header),get_mtime(header));
 	close(out);
-
 }

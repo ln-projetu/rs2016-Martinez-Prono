@@ -34,7 +34,7 @@ int get_size(header_posix_ustar *header) {
 }
 
 time_t get_mtime(header_posix_ustar *header) {
-	return (time_t)octallong_to_integer(atol(header->mtime));
+	return (time_t) octal_to_integer(atol(header->mtime));
 }
 
 int get_checksum(header_posix_ustar *header) {
@@ -44,7 +44,6 @@ int get_checksum(header_posix_ustar *header) {
 char* get_linkname(header_posix_ustar *header) {
 	return header->linkname;
 }
-
 
 int is_posix_ustar(header_posix_ustar *header) {
 	return strcmp(header->magic, USTAR) == 0;
@@ -140,7 +139,6 @@ char* print_as_list(header_posix_ustar *header) {
 
 		}
 	}
-
 
 
 	if (is_directory(header))
