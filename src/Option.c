@@ -91,6 +91,12 @@ int checkoption(int argc, char *argv[], Option *a) {
 			printf("invalid number of threads\n");
 			return 1;
 		}
+		else
+			setnb(a, nb_thread);
 	}
 	return 0;
 };
+
+int count_options(Option *options) {
+	return (isl(options) + isx(options) + isx(options) + isz(options));
+}

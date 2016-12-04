@@ -26,4 +26,6 @@ int getnbp(Option *a);
 
 int checkoption(int argc, char *argv[],Option *a);
 
+int count_options(Option *options);
+
 #endif

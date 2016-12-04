@@ -6,9 +6,9 @@ OBJ = $(wildcard $(BUILDDIR)/*.o)
 INC = -I $(INCDIR)
 CC = gcc
 ifeq ($(DEBUG),1)
-CFLAGS = -g -Wall -DDEBUG=1
+CFLAGS = -g -Wall -DDEBUG=1 -pthread
 else
-CFLAGS = -g -Wall -DDEBUG=0
+CFLAGS = -g -Wall -DDEBUG=0 -pthread
 endif
 
 PGM = ptar

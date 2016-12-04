@@ -15,14 +15,20 @@ Option *options;
 
 int main(int argc, char *argv[]) {
 	int statut = -1;
-	
+
 	// First of all, check enabled options
 	options = create_option();
 
 	if (checkoption(argc, argv, options) == 0) {
-		read_tar_file(open_tar(argv[argc - 1]));
-		if (isx(options))
-			extract_tar(argv[argc - 1]);
+
+		// if no option OR just only list file with details
+		if(count_options(options) == 0 || (isl(options) && count_options(options) == 1))
+			read_tar_file(argv[argc - 1]);
+
+		else {
+			if (isx(options))
+				extract_tar(argv[argc - 1]);
+		}
 	}
 
 	free(options);

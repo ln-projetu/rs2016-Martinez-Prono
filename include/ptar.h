@@ -12,9 +12,9 @@ int open_tar(char* filename);
 
 /**
  * Read a tar file and list its contents and displays useful informations.
- * @param fd File descriptor of this tarball.
+ * @param filename Filename of this tarball.
  */
-int read_tar_file(int fd);
+int read_tar_file(char* filename);
 
 void change_date_file(char* name, time_t mtime);
 
@@ -49,6 +49,8 @@ void extract_regular_file(int fd, header_posix_ustar *header);
 void extract_directory(int fd, header_posix_ustar *header);
 
 void extract_symblink(int fd,header_posix_ustar *header);
+
+void print_results(header_posix_ustar *header);
 
 
 #endif

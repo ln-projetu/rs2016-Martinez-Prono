@@ -13,6 +13,8 @@
 #include "Option.h"
 #include <utime.h>
 #include <time.h>
+#include <pthread.h>
+
 
 
 extern Option *options;
@@ -22,40 +24,27 @@ int open_tar(char* filename) {
 	return open(filename, O_RDONLY, 0);
 }
 
-int read_tar_file(int fd) {
+int read_tar_file(char* filename) {
 	int nb_zeros_blocks = 0;		// Count zeros block at the end of file
-	int i;
-	header_posix_ustar *header = create_header();
+	int fd = open_tar(filename);
 
-	while ((i = read(fd, header, BLOCK_SIZE)) == BLOCK_SIZE) {
+	if (fd != -1) {
+		header_posix_ustar *header = create_header();
 
-		if (nb_zeros_blocks >= 2) {				// Is it end of tar file ?
-			free(header);
-			return 0;
-		}
-		else {									// Is it a zeros bytes block ?
+		while (nb_zeros_blocks < 2) {
+			read(fd, header, BLOCK_SIZE);
 			if (is_empty(header))
 				nb_zeros_blocks++;
 			else {
-
-				if (isl(options)) {
-					char *buf = print_as_list(header);
-					printf("%s\n", buf);
-					free(buf);
-				}
-				else {
-					printf("%s\n", get_name(header)); // If not then it is a data block
-					//display_header(header);
-				}
-				if(DEBUG)
-					display_header(header);
-
-				move_next_512b(fd, get_size(header), 0);
+				nb_zeros_blocks = 0;
+				print_results(header);
 			}
-		}
 
+			move_next_512b(fd, get_size(header), 0);
+		}
+		free(header);
 	}
-	free(header);
+	close(fd);
 	return 0;
 }
 
@@ -70,8 +59,8 @@ void read_data_block(int fd, int size_data) {
 
 int extract_tar(char *filename) {
 	int nb_zeros_blocks = 0;		// Count zeros block at the end of file
-
 	int fd = open_tar(filename);
+	pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * 1);
 
 	if (fd != -1) {
 		header_posix_ustar *header = create_header();
@@ -82,7 +71,9 @@ int extract_tar(char *filename) {
 				nb_zeros_blocks++;
 			else {
 				nb_zeros_blocks = 0;
+				pthread_create(&thread[0], NULL, extract_entry, (void *)&id[i]);
 				extract_entry(fd, header);
+				print_results(header);
 			}
 		}
 		free(header);
@@ -91,7 +82,7 @@ int extract_tar(char *filename) {
 	return 0;
 }
 
-void extract_entry(int fd, header_posix_ustar *header) {
+void *extract_entry(int fd, header_posix_ustar *header) {
 	if(DEBUG)
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
 
@@ -113,23 +104,23 @@ void change_date_file(char* name, long seconds){
 
 
 void extract_regular_file(int fd, header_posix_ustar *header) {
-
 	int out = open(get_name(header),  O_CREAT | O_WRONLY);
 	int size_data = get_size(header);
-
 	char * data = (char *)malloc(sizeof(char) * size_data);
+
+	fsync(out);
+	read(fd, data, size_data);
+	write(out, data, size_data);
+	fsync(out);
+	close(out);
+
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
-
-	read(fd, data, size_data);
-	write(out, data, size_data);
 	change_date_file(get_name(header), get_mtime(header));
 
 	move_next_512b(fd, size_data, 1);
-
 	free(data);
-	close(out);
 }
 
 void extract_directory(int fd, header_posix_ustar *header) {
@@ -148,4 +139,11 @@ void extract_symblink(int fd,header_posix_ustar *header){
 	fchown(out, get_uid(header), get_gid(header));
 	change_date_file(get_name(header),get_mtime(header));
 	close(out);
+}
+
+void print_results(header_posix_ustar *header) {
+	if(isl(options))
+		printf("%s\n", print_as_list(header));
+	else
+		printf("%s\n", get_name(header));
 }
