@@ -60,7 +60,7 @@ void read_data_block(int fd, int size_data) {
 int extract_tar(char *filename) {
 	int nb_zeros_blocks = 0;		// Count zeros block at the end of file
 	int fd = open_tar(filename);
-	pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * 1);
+	//pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * 1);
 
 	if (fd != -1) {
 		header_posix_ustar *header = create_header();
@@ -71,7 +71,7 @@ int extract_tar(char *filename) {
 				nb_zeros_blocks++;
 			else {
 				nb_zeros_blocks = 0;
-				pthread_create(&thread[0], NULL, extract_entry, (void *)&id[i]);
+				//pthread_create(&thread[0], NULL, extract_entry, );
 				extract_entry(fd, header);
 				print_results(header);
 			}
@@ -82,7 +82,7 @@ int extract_tar(char *filename) {
 	return 0;
 }
 
-void *extract_entry(int fd, header_posix_ustar *header) {
+void extract_entry(int fd, header_posix_ustar *header) {
 	if(DEBUG)
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
 
