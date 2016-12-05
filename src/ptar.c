@@ -18,6 +18,7 @@
 
 
 extern Option *options;
+extern *thread_tab;
 
 
 int open_tar(char* filename) {
@@ -83,8 +84,9 @@ int extract_tar(char *filename) {
 }
 
 void extract_entry(int fd, header_posix_ustar *header) {
-	if(DEBUG)
+	if(DEBUG){
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
+	}
 
 	if (is_regular_file(header))
 		extract_regular_file(fd, header);
