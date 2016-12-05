@@ -91,6 +91,10 @@ int checkoption(int argc, char *argv[], Option *a) {
 			printf("invalid number of threads\n");
 			return 1;
 		}
+		else if(isp(a)==1 && isx(a) == 0){
+			printf("Nombre de threads définit, mais sans extraction demandée, pas de sens\n");
+			return 1;
+		}
 		else
 			setnb(a, nb_thread);
 	}
@@ -98,5 +102,5 @@ int checkoption(int argc, char *argv[], Option *a) {
 };
 
 int count_options(Option *options) {
-	return (isl(options) + isx(options) + isx(options) + isz(options));
+	return (isl(options) + isp(options) + isx(options) + isz(options));
 }
