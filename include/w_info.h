@@ -39,4 +39,9 @@ w_info* create_w_info(header_posix_ustar *header, char* buffer);
  */
 void free_w_info(w_info *info);
 
+
+header_posix_ustar* get_header(w_info* info);
+
+char* get_data(w_info* info);
+
 #endif

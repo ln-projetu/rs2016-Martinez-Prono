@@ -2,6 +2,7 @@
 #define PTAR_H
 
 #include "header_posix_ustar.h"
+#include "w_info.h"
 
 
 /**
@@ -34,21 +35,21 @@ int extract_tar(char *filename);
 /**
  * calls the extract_X() method depending on the typeflag
  */
-void extract_entry(int fd, header_posix_ustar *header);
+void extract_entry(w_info* info);
 
 /**
  * Extract a regular file in the tarball.
  * @param header The header of the regular file.
  */
-void extract_regular_file(int fd, header_posix_ustar *header);
+void extract_regular_file(w_info* info);
 
 /**
  * Extract the directory in the tarball. More precisly,
  * this method create only the directory.
  */
-void extract_directory(int fd, header_posix_ustar *header);
+void extract_directory(w_info* info);
 
-void extract_symblink(int fd,header_posix_ustar *header);
+void extract_symblink(w_info* info);
 
 void print_results(header_posix_ustar *header);
 
