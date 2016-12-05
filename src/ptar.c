@@ -84,7 +84,7 @@ int extract_tar(char *filename) {
 }
 
 void extract_entry(int fd, header_posix_ustar *header) {
-	if(DEBUG){
+	if (DEBUG) {
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
 	}
 
@@ -93,13 +93,13 @@ void extract_entry(int fd, header_posix_ustar *header) {
 
 	if (is_directory(header))
 		extract_directory(fd, header);
-	if(is_symblink(header))
-		extract_symblink(fd,header);
+	if (is_symblink(header))
+		extract_symblink(fd, header);
 }
 
-void change_date_file(char* name, long seconds){
+void change_date_file(char* name, long seconds) {
 	struct utimbuf t;
- 	time(&t.actime);
+	time(&t.actime);
 	t.modtime = seconds;
 	utime(name, &t);
 }
@@ -110,11 +110,11 @@ void extract_regular_file(int fd, header_posix_ustar *header) {
 	int size_data = get_size(header);
 	char * data = (char *)malloc(sizeof(char) * size_data);
 
-	fsync(out);
+	//fsync(out);
 	read(fd, data, size_data);
 	write(out, data, size_data);
 	fsync(out);
-	close(out);
+
 
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
@@ -122,6 +122,7 @@ void extract_regular_file(int fd, header_posix_ustar *header) {
 	change_date_file(get_name(header), get_mtime(header));
 
 	move_next_512b(fd, size_data, 1);
+	close(out);
 	free(data);
 }
 
@@ -129,22 +130,22 @@ void extract_directory(int fd, header_posix_ustar *header) {
 	mkdir(get_name(header), get_mode(header));
 	int out = open(get_name(header),  O_CREAT | O_WRONLY);
 	fchown(out, get_uid(header), get_gid(header));
-	change_date_file(get_name(header),get_mtime(header));
+	change_date_file(get_name(header), get_mtime(header));
 	close(out);
 	// No data to read after the header of a directory.
 }
 
-void extract_symblink(int fd,header_posix_ustar *header){
-	symlink(get_linkname(header),get_name(header));
-	int out = open(get_name(header),O_WRONLY);
-	fchmod(out, get_mode(header));
+void extract_symblink(int fd, header_posix_ustar *header) {
+	symlink(get_linkname(header), get_name(header));
+	int out = open(get_name(header), O_WRONLY);
+	fchmod(get_name(header), get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
-	change_date_file(get_name(header),get_mtime(header));
+	change_date_file(get_name(header), get_mtime(header));
 	close(out);
 }
 
 void print_results(header_posix_ustar *header) {
-	if(isl(options))
+	if (isl(options))
 		printf("%s\n", print_as_list(header));
 	else
 		printf("%s\n", get_name(header));

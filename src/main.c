@@ -29,7 +29,9 @@ int main(int argc, char *argv[]) {
 
 		else {
 			if (isp(options) ){
+				if(DEBUG){
 				printf("Le nombre de threads est : %d\n",options->nb_thread);
+				}
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
 			}
 
