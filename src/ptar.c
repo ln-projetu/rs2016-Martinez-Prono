@@ -79,6 +79,7 @@ int extract_tar(char *filename) {
 				pthread_t *marty;
 				marty = (pthread_t *) malloc(sizeof(pthread_t));
 				pthread_create(marty, NULL, extract_entry, (void*) w);
+				pthread_join(*marty, NULL);
 				//extract_entry(create_w_info(header, buffer));
 				print_results(header);
 				move_next_512b(fd, get_size(header), 1);
@@ -88,6 +89,7 @@ int extract_tar(char *filename) {
 		}
 	}
 	close(fd);
+	//pthread_exit(NULL);
 	return 0;
 }
 
@@ -108,7 +110,7 @@ void *extract_entry(void *args) {
 	if(is_symblink(header))
 		extract_symblink(info);
 
-	return 0;
+	pthread_exit(NULL);
 }
 
 void change_date_file(char* name, long seconds) {
