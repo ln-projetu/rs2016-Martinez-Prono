@@ -79,10 +79,10 @@ int extract_tar(char *filename) {
 				pthread_t *marty;
 				marty = (pthread_t *) malloc(sizeof(pthread_t));
 				pthread_create(marty, NULL, extract_entry, (void*) w);
-				extract_entry(create_w_info(header, buffer));
+				//extract_entry(create_w_info(header, buffer));
 				print_results(header);
 				move_next_512b(fd, get_size(header), 1);
-				free(marty);
+				//free(marty);
 			}
 
 		}
@@ -93,7 +93,8 @@ int extract_tar(char *filename) {
 
 void *extract_entry(void *args) {
 	w_info *info = (w_info *) args;
-	printf("%p\n", pthread_self());
+	pthread_t current =  pthread_self();
+	printf("%p\n", &current);
 	header_posix_ustar *header =  get_header(info);
 	
 	if(DEBUG)
@@ -123,9 +124,10 @@ void extract_regular_file(w_info* info) {
 
 	int out = open(get_name(header),  O_CREAT | O_WRONLY);
 	write(out, get_data(info), get_size(header));
-	fsync(out);
+	//fsync(out);
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
+	printf("%d\n", get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
 	change_date_file(get_name(header), get_mtime(header));
 	close(out);
