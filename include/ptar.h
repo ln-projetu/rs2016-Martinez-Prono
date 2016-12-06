@@ -17,6 +17,11 @@ int open_tar(char* filename);
  */
 int read_tar_file(char* filename);
 
+/**
+ * Change the last modified date of a file
+ * @param name Filename 
+ * @param mtime mtime structure with date.
+ */
 void change_date_file(char* name, time_t mtime);
 
 /**
@@ -35,7 +40,7 @@ int extract_tar(char *filename);
 /**
  * calls the extract_X() method depending on the typeflag
  */
-void extract_entry(w_info* info);
+void *extract_entry(void *args);
 
 /**
  * Extract a regular file in the tarball.
@@ -49,8 +54,15 @@ void extract_regular_file(w_info* info);
  */
 void extract_directory(w_info* info);
 
+/**
+ * Extract the symbolic link.
+ */
 void extract_symblink(w_info* info);
 
+/**
+ * tiny method which print information about the current entry.
+ * Prints only of the -l flag is enabled.
+ */
 void print_results(header_posix_ustar *header);
 
 

@@ -55,7 +55,6 @@ int getnbp(Option *a) {
 	return a->nb_thread;
 };
 
-
 int checkoption(int argc, char *argv[], Option *a) {
 	int c;
 	char opt[] = "xlpz";

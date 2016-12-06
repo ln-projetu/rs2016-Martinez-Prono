@@ -3,6 +3,7 @@
 
 #include "header_posix_ustar.h"
 
+
 /**
  * Structure for in order to pass essential informations for a thread.
  * In our programm, threads are used to write data (file, directories ...) in the hard disk.
@@ -32,16 +33,23 @@ typedef struct w_info {
  */
 w_info* create_w_info(header_posix_ustar *header, char* buffer);
 
-
 /**
  * Free the memory for a w_info structure.
  * @param info Structure to free.
  */
 void free_w_info(w_info *info);
 
-
+/**
+ * @param info 
+ * @return a pointer to the header_posix_ustar structure in the w_info.
+ */
 header_posix_ustar* get_header(w_info* info);
 
+/**
+ * @param info
+ * @return Data to write
+ */
 char* get_data(w_info* info);
+
 
 #endif
