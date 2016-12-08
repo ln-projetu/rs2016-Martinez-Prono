@@ -17,7 +17,6 @@ pthread_t *thread_tab;
 
 int main(int argc, char *argv[]) {
 	int statut = 0;
-	uncompress_archive("fj");
 
 	// First of all, check enabled options
 	options = create_option();
@@ -36,7 +35,9 @@ int main(int argc, char *argv[]) {
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
 			}
 
-			else if (isx(options))
+			else if (isz(options))
+				extract_tar_gz(argv[argc - 1]);
+			else if(isx(options))
 				extract_tar(argv[argc - 1]);
 		}
 	}

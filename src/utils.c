@@ -1,5 +1,7 @@
 #include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 #include "utils.h"
 
 
@@ -24,4 +26,11 @@ void move_next_512b(int fd, int size, int write_mode) {
 		lseek(fd, i * 512 - size, SEEK_CUR);
 	else
 		lseek(fd, i * 512, SEEK_CUR);
+}
+
+char* basename(char* filename) {
+	char *no_ext = strdup(filename);
+	char *ext = strrchr(no_ext, '.');
+	*ext = '\0';
+	return no_ext;
 }

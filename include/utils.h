@@ -17,4 +17,6 @@ int octal_to_integer(long octal);
 
 void move_next_512b(int fd, int size, int write_mode);
 
+char* basename(char* filename);
+
 #endif

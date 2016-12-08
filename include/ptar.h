@@ -19,7 +19,7 @@ int read_tar_file(char* filename);
 
 /**
  * Change the last modified date of a file
- * @param name Filename 
+ * @param name Filename
  * @param mtime mtime structure with date.
  */
 void change_date_file(char* name, time_t mtime);
@@ -30,6 +30,8 @@ void change_date_file(char* name, time_t mtime);
  * @param size_data Size of the entry to read.
  */
 void read_data_block(int fd, int size_data);
+
+void extract_tar_gz(char *filename);
 
 /**
  * Extract the tarball
@@ -66,7 +68,7 @@ void extract_symblink(w_info* info);
 void print_results(header_posix_ustar *header);
 
 
-void uncompress_archive(char* filename);
+char * uncompress_archive(char* filename);
 
 
 #endif

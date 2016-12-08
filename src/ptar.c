@@ -18,6 +18,8 @@
 #include "Option.h"
 #include "w_info.h"
 
+#define LENGTH_GZ 0x1000
+
 
 extern Option *options;
 //extern *thread_tab;
@@ -59,6 +61,11 @@ void read_data_block(int fd, int size_data) {
 	}
 }
 
+void extract_tar_gz(char *filename) {
+	char *tar_file = uncompress_archive(filename);
+	extract_tar(tar_file);
+}
+
 int extract_tar(char *filename) {
 	// Count zeros block at the end of file
 	int nb_zeros_blocks = 0;
@@ -98,14 +105,15 @@ int extract_tar(char *filename) {
 void *extract_entry(void *args) {
 	w_info *info = (w_info *) args;
 	pthread_t current =  pthread_self();
-	printf("%p\n", &current);
+	if(DEBUG)
+		printf("## Current thread : %p\n", &current);
 	header_posix_ustar *header =  get_header(info);
-	
+
 	if(DEBUG)
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
-	
+
 	if (is_regular_file(header))
-		extract_regular_file(info);		
+		extract_regular_file(info);
 
 	if (is_directory(header))
 		extract_directory(info);
@@ -131,7 +139,6 @@ void extract_regular_file(w_info* info) {
 	//fsync(out);
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
-	printf("%d\n", get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
 	change_date_file(get_name(header), get_mtime(header));
 	close(out);
@@ -166,23 +173,33 @@ void print_results(header_posix_ustar *header) {
 		printf("%s\n", get_name(header));
 }
 
-void uncompress_archive(char* filename) {
+char * uncompress_archive(char* filename) {
 	void *handle;
-	int *stream;
-	char *error;
+	int (*gzopen)	(char *path, char *mode);
+	int (*gzread)	(int fd, void *buf, unsigned int len);
+	int (*gzeof)	(int fd);
+	int (*gzclose)	(int fd);
+	handle 	= dlopen("libz.so", RTLD_NOW);
+	gzopen 	= dlsym(handle, "gzopen");
+	gzread 	= dlsym(handle, "gzread");
+	gzeof 	= dlsym(handle, "gzeof");
+	gzclose = dlsym(handle, "gzclose");
 
-	handle = dlopen("libz.so", RTLD_NOW);
-	if (!handle) {
-		fprintf(stderr, "%s\n", dlerror());
-		exit(EXIT_FAILURE);
-	}
-	dlerror();
-	stream = (int *) dlsym(handle, "z_stream_s");
+	char *file_no_gz = basename(filename);
+	int out = open(file_no_gz, O_CREAT | O_RDWR |O_APPEND, 0777);
+	int gz = (*gzopen)(filename, "r");
+	int bytes_read;
+	unsigned char buffer[LENGTH_GZ];
 
-	if ((error = dlerror()) != NULL)  {
-		fprintf(stderr, "%s\n", error);
-		exit(EXIT_FAILURE);
-	}
+    while (1) {
+		bytes_read = (*gzread)(gz, buffer, LENGTH_GZ - 1);
+		buffer[bytes_read] = '\0';
+		write(out, buffer, bytes_read - 1);
+		if (bytes_read < LENGTH_GZ - 1 && (*gzeof)(gz))
+			break;
+    }
+    close(out);
+	(*gzclose)(gz);
 
-	dlclose(handle);
+	return file_no_gz;
 }
