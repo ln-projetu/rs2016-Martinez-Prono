@@ -17,6 +17,7 @@ pthread_t *thread_tab;
 
 int main(int argc, char *argv[]) {
 	int statut = 0;
+	uncompress_archive("fj");
 
 	// First of all, check enabled options
 	options = create_option();

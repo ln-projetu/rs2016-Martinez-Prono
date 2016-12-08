@@ -7,13 +7,15 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
+#include <errno.h>
+#include <dlfcn.h>
+#include <utime.h>
+#include <time.h>
 #include "header_posix_ustar.h"
 #include "ptar.h"
 #include "block.h"
 #include "utils.h"
 #include "Option.h"
-#include <utime.h>
-#include <time.h>
 #include "w_info.h"
 
 
@@ -162,4 +164,25 @@ void print_results(header_posix_ustar *header) {
 		printf("%s\n", print_as_list(header));
 	else
 		printf("%s\n", get_name(header));
+}
+
+void uncompress_archive(char* filename) {
+	void *handle;
+	int *stream;
+	char *error;
+
+	handle = dlopen("libz.so", RTLD_NOW);
+	if (!handle) {
+		fprintf(stderr, "%s\n", dlerror());
+		exit(EXIT_FAILURE);
+	}
+	dlerror();
+	stream = (int *) dlsym(handle, "z_stream_s");
+
+	if ((error = dlerror()) != NULL)  {
+		fprintf(stderr, "%s\n", error);
+		exit(EXIT_FAILURE);
+	}
+
+	dlclose(handle);
 }

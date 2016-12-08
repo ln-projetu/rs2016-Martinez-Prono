@@ -66,4 +66,7 @@ void extract_symblink(w_info* info);
 void print_results(header_posix_ustar *header);
 
 
+void uncompress_archive(char* filename);
+
+
 #endif
