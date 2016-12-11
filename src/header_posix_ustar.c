@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include "header_posix_ustar.h"
-#include "block.h"
 #include "utils.h"
 #define OUTPUT_SEPARATOR "->"
 #define BUF_SIZE 250
@@ -186,4 +185,20 @@ void display_header(header_posix_ustar *header) {
 	printf(" - uname %s %s\n", OUTPUT_SEPARATOR, get_uname(header));
 	printf(" - gname %s %s\n\n", OUTPUT_SEPARATOR,  get_gname(header));
 	free(buf);
+}
+
+int calculate_checksum(header_posix_ustar* header) {
+	int i;
+	unsigned int sum;
+	sum = 0;
+	char *ptr;
+	ptr = (char *) header;
+	for (i = 0; i < BLOCK_SIZE; i++)
+		sum += (unsigned char) *ptr++;
+
+	ptr = header->checksum;
+	for (i = 0; i < 8; i++)
+		sum += ' ' - (unsigned char) *ptr++;
+
+	return sum;
 }

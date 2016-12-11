@@ -13,7 +13,6 @@
 #include <time.h>
 #include "header_posix_ustar.h"
 #include "ptar.h"
-#include "block.h"
 #include "utils.h"
 #include "Option.h"
 #include "w_info.h"
@@ -40,6 +39,11 @@ int read_tar_file(char* filename) {
 			if (is_empty(header))
 				nb_zeros_blocks++;
 			else {
+				if(get_checksum(header) != calculate_checksum(header)) {
+					printf("The archive is corrupted\n");
+					return -1;
+				}
+
 				nb_zeros_blocks = 0;
 				print_results(header);
 			}
@@ -53,10 +57,10 @@ int read_tar_file(char* filename) {
 }
 
 void read_data_block(int fd, int size_data) {
-	block data_bloc;
+	//block data_bloc;
 	int r = 0;
 	while (size_data > 0) {
-		r = read(fd, &data_bloc, BLOCK_SIZE);
+		r = read(fd, NULL, BLOCK_SIZE);
 		size_data = size_data - r;
 	}
 }
@@ -203,3 +207,4 @@ char * uncompress_archive(char* filename) {
 
 	return file_no_gz;
 }
+

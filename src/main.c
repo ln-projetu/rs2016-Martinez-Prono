@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
 		// if no option OR just only list file with details
 		if (count_options(options) == 0 || (isl(options) && count_options(options) == 1))
-			read_tar_file(argv[argc - 1]);
+			statut = read_tar_file(argv[argc - 1]);
 
 		else {
 			if (isp(options) ){

@@ -27,7 +27,7 @@ all: build
 	$(CC) $(CFLAGS) $(INC) -c $< $(LIBFLAGS) -o $(BUILDDIR)/$@
 
 
-main: Option.o block.o header_posix_ustar.o utils.o ptar.o main.o w_info.o
+main: Option.o header_posix_ustar.o utils.o ptar.o main.o w_info.o
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFLAGS) -o $(TARGET) 
 
 
