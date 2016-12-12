@@ -77,9 +77,12 @@ int extract_tar(char *filename) {
 		while (nb_zeros_blocks < 2) {
 			header_posix_ustar *header = create_header();
 			read(fd, header, BLOCK_SIZE);
+			int move = get_size(header);
 
-			if (is_empty(header))
+			if (is_empty(header)) {
 				nb_zeros_blocks++;
+				free(header);
+			}
 			else {
 				nb_zeros_blocks = 0;
 				w_info* w = create_w_info(header);
@@ -89,9 +92,10 @@ int extract_tar(char *filename) {
 				marty = (pthread_t *) malloc(sizeof(pthread_t));
 				pthread_create(marty, NULL, extract_entry, (void*) w);
 				pthread_join(*marty, NULL);
-				move_next_512b(fd, get_size(header), 1);
+				move_next_512b(fd, move, 1);
 				free(marty);
 			}
+
 		}
 	}
 	close(fd);

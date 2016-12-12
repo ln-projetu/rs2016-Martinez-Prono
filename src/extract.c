@@ -61,10 +61,8 @@ void extract_regular_file(w_info* info) {
 void extract_directory(w_info* info) {
 	header_posix_ustar* header = get_header(info);
 	mkdir(get_name(header), get_mode(header));
-	int out = open(get_name(header),  O_CREAT | O_WRONLY);
-	fchown(out, get_uid(header), get_gid(header));
+	chown(get_name(header), get_uid(header), get_gid(header));
 	change_date_file(get_name(header), get_mtime(header));
-	close(out);
 	// No data to read after the header of a directory.
 }
 
