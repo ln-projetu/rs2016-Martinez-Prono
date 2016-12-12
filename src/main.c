@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Option.h"
+#include "option.h"
 #include "ptar.h"
 #include <pthread.h>
 

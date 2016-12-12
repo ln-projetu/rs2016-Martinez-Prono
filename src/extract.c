@@ -10,6 +10,7 @@
 #include <utime.h>
 #include <time.h>
 #include "extract.h"
+#include "option.h"
 
 
 void *extract_entry(void *args) {
@@ -30,7 +31,7 @@ void *extract_entry(void *args) {
 	if(is_symblink(header))
 		extract_symblink(info);
 
-	//free_w_info(info);
+	free_w_info(info);
 	pthread_exit(NULL);
 }
 

@@ -16,9 +16,11 @@ w_info* create_w_info(header_posix_ustar *header) {
 }
 
 void free_w_info(w_info *info) {
-	free(info->header);
-	free(info->buffer);
-	free(info);
+	if(info != NULL) {
+		free(info->header);
+		free(info->buffer);
+		free(info);
+	}
 }
 
 header_posix_ustar* get_header(w_info* info) {

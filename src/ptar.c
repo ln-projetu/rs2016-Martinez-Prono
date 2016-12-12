@@ -9,9 +9,10 @@
 #include "header_posix_ustar.h"
 #include "ptar.h"
 #include "utils.h"
-#include "Option.h"
+#include "option.h"
 #include "extract.h"
 #include "w_info.h"
+#include "print.h"
 
 #define LENGTH_GZ 0x1000
 
@@ -127,11 +128,4 @@ char *uncompress_archive(char* filename) {
 	(*gzclose)(gz);
 
 	return file_no_gz;
-}
-
-void print_results(header_posix_ustar *header) {
-	if (isl(options))
-		printf("%s\n", print_as_list(header));
-	else
-		printf("%s\n", get_name(header));
 }
