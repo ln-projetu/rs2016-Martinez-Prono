@@ -12,3 +12,12 @@ void print_results(header_posix_ustar *header) {
 	else
 		printf("%s\n", get_name(header));
 }
+
+
+void print_corrupted() {
+	printf("The archive is corrupted\n");
+}
+
+void print_cannot_open(char *filename) {
+	printf("Cannot open '%s'\n", filename);
+}

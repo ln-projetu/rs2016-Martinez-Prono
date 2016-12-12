@@ -28,27 +28,29 @@ int open_tar(char* filename) {
 int read_tar(char* filename) {
 	int nb_zeros_blocks = 0;		// Count zeros block at the end of file
 	int fd = open_tar(filename);
+	if (fd == -1) {
+		print_cannot_open(filename);
+		return -1;
+	}
 
-	if (fd != -1) {
-		header_posix_ustar *header = create_header();
-		while (nb_zeros_blocks < 2) {
-			read(fd, header, BLOCK_SIZE);
-			if (is_empty(header))
-				nb_zeros_blocks++;
-			else {
-				if(get_checksum(header) != calculate_checksum(header)) {
-					printf("The archive is corrupted\n");
-					return -1;
-				}
-
-				nb_zeros_blocks = 0;
-				print_results(header);
+	header_posix_ustar *header = create_header();
+	while (nb_zeros_blocks < 2) {
+		read(fd, header, BLOCK_SIZE);
+		if (is_empty(header))
+			nb_zeros_blocks++;
+		else {
+			if(check_sum(header) == 0) {
+				print_corrupted();
+				return -1;
 			}
 
-			move_next_512b(fd, get_size(header), 0);
+			nb_zeros_blocks = 0;
+			print_results(header);
 		}
-		free(header);
+		move_next_512b(fd, get_size(header), 0);
 	}
+
+	free(header);
 	close(fd);
 	return 0;
 }
@@ -63,7 +65,10 @@ void read_data_block(int fd, int size_data) {
 
 int extract_tar_gz(char *filename) {
 	char *tar_file = uncompress_archive(filename);
-	return extract_tar(tar_file);
+	if(tar_file == NULL)
+		return -1;
+	else
+		return extract_tar(tar_file);
 }
 
 int extract_tar(char *filename) {
@@ -85,6 +90,10 @@ int extract_tar(char *filename) {
 			}
 			else {
 				nb_zeros_blocks = 0;
+				if(check_sum(header) == 0) {
+					print_corrupted();
+					return -1;
+				}
 				w_info* w = create_w_info(header);
 				read(fd, w->buffer, get_size(header));
 
@@ -114,9 +123,15 @@ char *uncompress_archive(char* filename) {
 	gzeof 	= dlsym(handle, "gzeof");
 	gzclose = dlsym(handle, "gzclose");
 
+
+	int gz = (*gzopen)(filename, "r");
+	if(!gz){
+		print_cannot_open(filename);
+		return NULL;
+	}
+
 	char *file_no_gz = basename(filename);
 	int out = open(file_no_gz, O_CREAT | O_RDWR |O_APPEND, 0777);
-	int gz = (*gzopen)(filename, "r");
 	int bytes_read;
 	unsigned char buffer[LENGTH_GZ];
 
@@ -129,6 +144,7 @@ char *uncompress_archive(char* filename) {
     }
     close(out);
 	(*gzclose)(gz);
+
 
 	return file_no_gz;
 }

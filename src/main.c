@@ -24,14 +24,13 @@ int main(int argc, char *argv[]) {
 		if (count_options(options) == 0 || (isl(options) && count_options(options) == 1))
 			statut = read_tar(argv[argc - 1]);
 		else {
-
-			if (isp(options) )
+			if (isp(options))
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
 
 			else if (isz(options))
-				extract_tar_gz(argv[argc - 1]);
+				statut = extract_tar_gz(argv[argc - 1]);
 			else if(isx(options))
-				extract_tar(argv[argc - 1]);
+				statut = extract_tar(argv[argc - 1]);
 		}
 	}
 
