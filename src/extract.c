@@ -30,6 +30,7 @@ void *extract_entry(void *args) {
 	if(is_symblink(header))
 		extract_symblink(info);
 
+	//free_w_info(info);
 	pthread_exit(NULL);
 }
 

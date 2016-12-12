@@ -28,10 +28,9 @@ typedef struct w_info {
 /**
  * Malloc a w_info structure
  * @param header Header of the entry to write
- * @param buffer The content of the entry to write
  * @return a w_info structure
  */
-w_info* create_w_info(header_posix_ustar *header, char* buffer);
+w_info* create_w_info(header_posix_ustar *header);
 
 /**
  * Free the memory for a w_info structure.
