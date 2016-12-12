@@ -89,7 +89,6 @@ int extract_tar(char *filename) {
 				marty = (pthread_t *) malloc(sizeof(pthread_t));
 				pthread_create(marty, NULL, extract_entry, (void*) w);
 				pthread_join(*marty, NULL);
-				print_results(header);
 				move_next_512b(fd, get_size(header), 1);
 				free(marty);
 			}

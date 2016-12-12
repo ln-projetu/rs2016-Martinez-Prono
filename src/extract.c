@@ -10,6 +10,7 @@
 #include <utime.h>
 #include <time.h>
 #include "extract.h"
+#include "print.h"
 #include "option.h"
 
 
@@ -19,6 +20,7 @@ void *extract_entry(void *args) {
 	if(DEBUG)
 		printf("## Current thread : %p\n", &current);
 	header_posix_ustar *header =  get_header(info);
+	print_results(header);
 
 	if(DEBUG)
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
