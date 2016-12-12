@@ -10,7 +10,12 @@
 #include <utime.h>
 #include <time.h>
 #include "extract.h"
+
 #include <semaphore.h>
+
+#include "print.h"
+#include "option.h"
+
 
 extern sem_t *semaphore;
 
@@ -21,6 +26,7 @@ void *extract_entry(void *args) {
 	if(DEBUG)
 		printf("## Current thread : %p\n", (pthread_t *)pthread_self());
 	header_posix_ustar *header =  get_header(info);
+	print_results(header);
 
 	if(DEBUG)
 		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
@@ -32,10 +38,15 @@ void *extract_entry(void *args) {
 		extract_directory(info);
 	if(is_symblink(header))
 		extract_symblink(info);
+
 	sem_post(semaphore);
 	sem_getvalue(semaphore,&sval);
 				
 	printf("PST %d\n",sval);
+
+
+	free_w_info(info);
+
 	pthread_exit(NULL);
 }
 
@@ -63,10 +74,8 @@ void extract_regular_file(w_info* info) {
 void extract_directory(w_info* info) {
 	header_posix_ustar* header = get_header(info);
 	mkdir(get_name(header), get_mode(header));
-	int out = open(get_name(header),  O_CREAT | O_WRONLY);
-	fchown(out, get_uid(header), get_gid(header));
+	chown(get_name(header), get_uid(header), get_gid(header));
 	change_date_file(get_name(header), get_mtime(header));
-	close(out);
 	// No data to read after the header of a directory.
 }
 

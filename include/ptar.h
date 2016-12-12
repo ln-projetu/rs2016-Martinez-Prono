@@ -37,13 +37,6 @@ int extract_tar_gz(char *filename);
 void read_data_block(int fd, int size_data);
 
 
-/**
- * tiny method which print information about the current entry.
- * Prints only of the -l flag is enabled.
- */
-void print_results(header_posix_ustar *header);
-
-
 char * uncompress_archive(char* filename);
 
 

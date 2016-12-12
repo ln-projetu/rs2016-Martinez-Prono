@@ -187,7 +187,7 @@ void display_header(header_posix_ustar *header) {
 	free(buf);
 }
 
-int calculate_checksum(header_posix_ustar* header) {
+int check_sum(header_posix_ustar* header) {
 	int i;
 	unsigned int sum;
 	sum = 0;
@@ -200,5 +200,5 @@ int calculate_checksum(header_posix_ustar* header) {
 	for (i = 0; i < 8; i++)
 		sum += ' ' - (unsigned char) *ptr++;
 
-	return sum;
+	return sum == get_checksum(header);
 }

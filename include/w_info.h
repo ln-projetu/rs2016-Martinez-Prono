@@ -9,7 +9,7 @@
  * In our programm, threads are used to write data (file, directories ...) in the hard disk.
  * We have to use fsync() to be sure that data are really written on the disk and this method
  * can take a lot of time ! (that's why you used threads)
- * 
+ *
  * Information required for threads is the header of the entry and its data buffer !
  *
  * 'w_info for write_information'
@@ -28,10 +28,9 @@ typedef struct w_info {
 /**
  * Malloc a w_info structure
  * @param header Header of the entry to write
- * @param buffer The content of the entry to write
  * @return a w_info structure
  */
-w_info* create_w_info(header_posix_ustar *header, char* buffer);
+w_info* create_w_info(header_posix_ustar *header);
 
 /**
  * Free the memory for a w_info structure.

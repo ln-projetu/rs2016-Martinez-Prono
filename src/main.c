@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Option.h"
+#include "option.h"
 #include "ptar.h"
 #include <pthread.h>
 #include <semaphore.h>
@@ -26,9 +26,11 @@ int main(int argc, char *argv[]) {
 			statut = read_tar(argv[argc - 1]);
 		else {
 
+
 			if (isp(options) ){
 				if(DEBUG == 1)
 					printf("Le nombre de threads est %d\n",getnbp(options) );
+
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
 				semaphore = (sem_t*)malloc(sizeof(sem_t));
 				sem_init(semaphore,0,getnbp(options));
@@ -36,9 +38,9 @@ int main(int argc, char *argv[]) {
 			}
 
 			else if (isz(options))
-				extract_tar_gz(argv[argc - 1]);
+				statut = extract_tar_gz(argv[argc - 1]);
 			else if(isx(options))
-				extract_tar(argv[argc - 1]);
+				statut = extract_tar(argv[argc - 1]);
 		}
 	}
 

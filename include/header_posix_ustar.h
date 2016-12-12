@@ -144,6 +144,6 @@ int is_symblink(header_posix_ustar *header);
 /**
  * @return The calculated checksum of a given header.
  */
-int calculate_checksum(header_posix_ustar* header);
+int check_sum(header_posix_ustar* header);
 
 #endif

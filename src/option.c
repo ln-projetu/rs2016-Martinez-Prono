@@ -1,4 +1,4 @@
-#include "Option.h"
+#include "option.h"
 #include <stdlib.h>
 #include <getopt.h>
 #include <unistd.h>
