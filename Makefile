@@ -16,7 +16,6 @@ PGM = ptar
 TARGET = ./$(PGM)
 
 $(shell mkdir -p $(BUILDDIR))
-$(shell mkdir -p bin)
 
 
 all: build
@@ -32,6 +31,10 @@ main: Option.o header_posix_ustar.o utils.o ptar.o main.o w_info.o extract.o
 
 
 build: main
+
+clean: deleteFiles
+	@rm -rf $(TARGET)
+	@rm -rf $(BUILDDIR)
 
 
 valgrind: build
