@@ -23,7 +23,7 @@
 extern Option *options;
 extern pthread_t *thread_tab;
 extern sem_t *semaphore;
-
+extern int *thread_tab_bool;
 
 int open_tar(char* filename) {
 	return open(filename, O_RDONLY, 0);
@@ -78,10 +78,11 @@ int extract_tar_gz(char *filename) {
 int extract_tar(char *filename) {
 	// Count zeros block at the end of file
 	int nb_zeros_blocks = 0;
+
 	int fd = open_tar(filename);
 	//pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * 1);
 	int i=0;
-	int y;
+	int y=0;
 	int sval;
 	
 	if (fd != -1) {
@@ -113,21 +114,28 @@ int extract_tar(char *filename) {
 					if(getnbp(options) != 1){
 						for(i=0;i<getnbp(options);i++){
 
-							if(thread_tab[i] == NULL){
-								printf("THREAD NULL in extract\n");
+							if(thread_tab_bool[i] == 0){
+								
 								y=i;
-								printf("Y value : %d\n",y );
+								printf("THREAD NULL in extract %d\n",y);
 							}
 
 						}
 					}
 					
 					sem_getvalue(semaphore,&sval);
-					printf("Y value OUT : %d\n",y );
-					printf("After %d\n",sval);
-					if(getnbp(options) != 1)
-						pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
 					
+					printf("After %d\n",sval);
+					w->num_thread=y;
+					
+					printf("Follow %d\n",y );
+					if(getnbp(options) != 1){
+						if(thread_tab_bool[y] ==0){
+							thread_tab_bool[y]=1;
+							pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
+
+						}
+					}
 					else
 						pthread_create(thread_tab, NULL, extract_entry, (void*) w);
 
@@ -144,11 +152,15 @@ int extract_tar(char *filename) {
 		
 
 	}
+	if(getnbp(options) != 1){
 	for(i=0;i<getnbp(options);i++){
 
 		pthread_join(thread_tab[i],NULL);
 
 	}
+	}
+	else
+		pthread_join(*thread_tab,NULL);
 	close(fd);
 	return 0;
 }

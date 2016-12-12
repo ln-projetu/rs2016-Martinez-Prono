@@ -18,6 +18,8 @@
 
 
 extern sem_t *semaphore;
+extern int *thread_tab_bool;
+extern Option *options;
 
 void *extract_entry(void *args) {
 	int sval;
@@ -39,14 +41,16 @@ void *extract_entry(void *args) {
 	if(is_symblink(header))
 		extract_symblink(info);
 
-	sem_post(semaphore);
-	sem_getvalue(semaphore,&sval);
-				
-	printf("PST %d\n",sval);
+	
+	
 
 
+	if(getnbp(options) ==1)
+		thread_tab_bool[info->num_thread]=0;
 	free_w_info(info);
-
+	sem_post(semaphore);
+	sem_getvalue(semaphore,&sval);		
+	printf("PST %d\n",sval);
 	pthread_exit(NULL);
 }
 
@@ -64,6 +68,7 @@ void extract_regular_file(w_info* info) {
 	int out = open(get_name(header),  O_CREAT | O_WRONLY);
 	write(out, get_data(info), get_size(header));
 	fsync(out);
+
 	// Need maybe tu put these lines of code in a function...
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));

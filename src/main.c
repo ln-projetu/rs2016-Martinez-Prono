@@ -14,11 +14,13 @@
 Option *options;
 pthread_t *thread_tab;
 sem_t *semaphore;
+int *thread_tab_bool;
 
 
 int main(int argc, char *argv[]) {
 	int statut = 0;
 	options = create_option();
+
 
 	if (checkoption(argc, argv, options) == 0) {
 		// if no option OR just only list file with details
@@ -32,6 +34,7 @@ int main(int argc, char *argv[]) {
 					printf("Le nombre de threads est %d\n",getnbp(options) );
 
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
+				thread_tab_bool=(int *)malloc(sizeof(int)*getnbp(options));
 				semaphore = (sem_t*)malloc(sizeof(sem_t));
 				sem_init(semaphore,0,getnbp(options));
 				statut = extract_tar(argv[argc - 1]);
@@ -40,7 +43,10 @@ int main(int argc, char *argv[]) {
 			else if (isz(options))
 				statut = extract_tar_gz(argv[argc - 1]);
 			else if(isx(options)){
+				setp(options);
+				setnb(options,1);
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t));
+				thread_tab_bool=(int *)malloc(sizeof(int)*getnbp(options));
 				semaphore = (sem_t*)malloc(sizeof(sem_t));
 				sem_init(semaphore,0,1);
 				statut = extract_tar(argv[argc - 1]);

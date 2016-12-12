@@ -22,6 +22,7 @@
 typedef struct w_info {
 	header_posix_ustar* header;
 	char* buffer;
+	int num_thread;
 } w_info;
 
 
