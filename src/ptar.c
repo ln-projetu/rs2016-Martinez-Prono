@@ -12,12 +12,13 @@
 #include "Option.h"
 #include "extract.h"
 #include "w_info.h"
-
+#include <semaphore.h>
 #define LENGTH_GZ 0x1000
 
 
 extern Option *options;
-//extern *thread_tab;
+extern pthread_t *thread_tab;
+extern sem_t *semaphore;
 
 
 int open_tar(char* filename) {
@@ -70,31 +71,56 @@ int extract_tar(char *filename) {
 	int nb_zeros_blocks = 0;
 	int fd = open_tar(filename);
 	//pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * 1);
-
+	int i=0;
+	int y;
+	int sval;
+	
 	if (fd != -1) {
-
+		sem_getvalue(semaphore,&sval);
+		printf("Before %d\n",sval);
+		
 		while (nb_zeros_blocks < 2) {
 			header_posix_ustar *header = create_header();
 			read(fd, header, BLOCK_SIZE);
 
 			if (is_empty(header))
 				nb_zeros_blocks++;
-			else {
-				nb_zeros_blocks = 0;
-				char* buffer = (char *)malloc(sizeof(char) * get_size(header));
-				read(fd, buffer, get_size(header));
-				w_info* w = create_w_info(header, buffer);
-				pthread_t *marty;
-				marty = (pthread_t *) malloc(sizeof(pthread_t));
-				pthread_create(marty, NULL, extract_entry, (void*) w);
-				pthread_join(*marty, NULL);
-				//extract_entry(create_w_info(header, buffer));
-				print_results(header);
-				move_next_512b(fd, get_size(header), 1);
-				//free(marty);
+			else{
+				
+					nb_zeros_blocks = 0;
+					char* buffer = (char *)malloc(sizeof(char) * get_size(header));
+					read(fd, buffer, get_size(header));
+					w_info* w = create_w_info(header, buffer);
+					if(thread_tab[i] == NULL)
+						printf("THREAD NULL in extract\n");
+					for(i=0;i<getnbp(options);i++){
+
+						if(thread_tab[i] == NULL)
+							y=i;
+
+					}
+					sem_wait(semaphore);
+					sem_getvalue(semaphore,&sval);
+					
+					printf("After %d\n",sval);
+					pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
+
+					i++;
+					//extract_entry(create_w_info(header, buffer));
+					print_results(header);
+					move_next_512b(fd, get_size(header), 1);
+					//free(marty);
+				
 			}
 
 		}
+		
+
+	}
+	for(i=0;i<getnbp(options);i++){
+
+		pthread_join(thread_tab[i],NULL);
+
 	}
 	close(fd);
 	//pthread_exit(NULL);

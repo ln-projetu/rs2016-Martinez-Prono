@@ -3,7 +3,7 @@
 #include "Option.h"
 #include "ptar.h"
 #include <pthread.h>
-
+#include <semaphore.h>
 /**
  * Main program which
  * triggers actions depending on enabled options.
@@ -13,6 +13,7 @@
  */
 Option *options;
 pthread_t *thread_tab;
+sem_t *semaphore;
 
 
 int main(int argc, char *argv[]) {
@@ -25,8 +26,14 @@ int main(int argc, char *argv[]) {
 			statut = read_tar(argv[argc - 1]);
 		else {
 
-			if (isp(options) )
+			if (isp(options) ){
+				if(DEBUG == 1)
+					printf("Le nombre de threads est %d\n",getnbp(options) );
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
+				semaphore = (sem_t*)malloc(sizeof(sem_t));
+				sem_init(semaphore,0,getnbp(options));
+				extract_tar(argv[argc - 1]);
+			}
 
 			else if (isz(options))
 				extract_tar_gz(argv[argc - 1]);
