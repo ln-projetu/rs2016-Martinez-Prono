@@ -91,7 +91,7 @@ int extract_tar(char *filename) {
 		while (nb_zeros_blocks < 2) {
 			header_posix_ustar *header = create_header();
 			read(fd, header, BLOCK_SIZE);
-			int move = get_size(header);
+			//int move = get_size(header);
 
 			if (is_empty(header)) {
 				nb_zeros_blocks++;
@@ -104,15 +104,15 @@ int extract_tar(char *filename) {
 						print_corrupted();
 						return -1;
 					}
-					char* buffer = (char *)malloc(sizeof(char) * get_size(header));
+					//char* buffer = (char *)malloc(sizeof(char) * get_size(header));
 					w_info* w = create_w_info(header);
 					read(fd, w->buffer, get_size(header));
 					
-					if(thread_tab[i] == NULL)
+					if(thread_tab[i] == (pthread_t)NULL)
 						printf("THREAD NULL in extract\n");
 					for(i=0;i<getnbp(options);i++){
 
-						if(thread_tab[i] == NULL)
+						if(thread_tab[i] == (pthread_t)NULL)
 							y=i;
 
 					}
