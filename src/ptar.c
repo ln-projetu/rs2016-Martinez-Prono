@@ -107,22 +107,31 @@ int extract_tar(char *filename) {
 					//char* buffer = (char *)malloc(sizeof(char) * get_size(header));
 					w_info* w = create_w_info(header);
 					read(fd, w->buffer, get_size(header));
-					
-					if(thread_tab[i] == (pthread_t)NULL)
-						printf("THREAD NULL in extract\n");
-					for(i=0;i<getnbp(options);i++){
 
-						if(thread_tab[i] == (pthread_t)NULL)
-							y=i;
-
-					}
 					sem_wait(semaphore);
-					sem_getvalue(semaphore,&sval);
 					
-					printf("After %d\n",sval);
-					pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
+					if(getnbp(options) != 1){
+						for(i=0;i<getnbp(options);i++){
 
-					i++;
+							if(thread_tab[i] == NULL){
+								printf("THREAD NULL in extract\n");
+								y=i;
+								printf("Y value : %d\n",y );
+							}
+
+						}
+					}
+					
+					sem_getvalue(semaphore,&sval);
+					printf("Y value OUT : %d\n",y );
+					printf("After %d\n",sval);
+					if(getnbp(options) != 1)
+						pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
+					
+					else
+						pthread_create(thread_tab, NULL, extract_entry, (void*) w);
+
+					
 					//extract_entry(create_w_info(header, buffer));
 					print_results(header);
 					move_next_512b(fd, get_size(header), 1);

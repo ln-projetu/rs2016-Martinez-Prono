@@ -34,16 +34,21 @@ int main(int argc, char *argv[]) {
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
 				semaphore = (sem_t*)malloc(sizeof(sem_t));
 				sem_init(semaphore,0,getnbp(options));
-				extract_tar(argv[argc - 1]);
+				statut = extract_tar(argv[argc - 1]);
 			}
 
 			else if (isz(options))
 				statut = extract_tar_gz(argv[argc - 1]);
-			else if(isx(options))
+			else if(isx(options)){
+				thread_tab = (pthread_t *)malloc(sizeof(pthread_t));
+				semaphore = (sem_t*)malloc(sizeof(sem_t));
+				sem_init(semaphore,0,1);
 				statut = extract_tar(argv[argc - 1]);
+				
+			}
 		}
 	}
-
+	free(thread_tab);
 	free(options);
 	exit(statut);
 }

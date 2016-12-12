@@ -51,6 +51,10 @@ deleteFiles:
 	@rm -rf $(FILES)
 	@rm -rf $(TAR)
 
+deleteFilesO:
+	@rm -rf $(FILES)
+	
+
 createFiles: deleteFiles
 	@echo "my first file!" > file1
 	@echo "my second file!" > file2
