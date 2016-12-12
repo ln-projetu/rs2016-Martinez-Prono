@@ -2,7 +2,7 @@
 #define PTAR_H
 
 #include "header_posix_ustar.h"
-#include "w_info.h"
+
 
 
 /**
@@ -15,23 +15,7 @@ int open_tar(char* filename);
  * Read a tar file and list its contents and displays useful informations.
  * @param filename Filename of this tarball.
  */
-int read_tar_file(char* filename);
-
-/**
- * Change the last modified date of a file
- * @param name Filename
- * @param mtime mtime structure with date.
- */
-void change_date_file(char* name, time_t mtime);
-
-/**
- * Read the contents of a entry in the tar file.
- * @param fd File descriptor of this tarball.
- * @param size_data Size of the entry to read.
- */
-void read_data_block(int fd, int size_data);
-
-void extract_tar_gz(char *filename);
+int read_tar(char* filename);
 
 /**
  * Extract the tarball
@@ -40,26 +24,18 @@ void extract_tar_gz(char *filename);
 int extract_tar(char *filename);
 
 /**
- * calls the extract_X() method depending on the typeflag
+ * Decompress a GZ Archive
+ * @param filename name of the GZ file
  */
-void *extract_entry(void *args);
+int extract_tar_gz(char *filename);
 
 /**
- * Extract a regular file in the tarball.
- * @param header The header of the regular file.
+ * Read the contents of a entry in the tar file.
+ * @param fd File descriptor of this tarball.
+ * @param size_data Size of the entry to read.
  */
-void extract_regular_file(w_info* info);
+void read_data_block(int fd, int size_data);
 
-/**
- * Extract the directory in the tarball. More precisly,
- * this method create only the directory.
- */
-void extract_directory(w_info* info);
-
-/**
- * Extract the symbolic link.
- */
-void extract_symblink(w_info* info);
 
 /**
  * tiny method which print information about the current entry.

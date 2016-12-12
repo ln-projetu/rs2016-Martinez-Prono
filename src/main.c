@@ -17,23 +17,16 @@ pthread_t *thread_tab;
 
 int main(int argc, char *argv[]) {
 	int statut = 0;
-
-	// First of all, check enabled options
 	options = create_option();
 
 	if (checkoption(argc, argv, options) == 0) {
-
 		// if no option OR just only list file with details
 		if (count_options(options) == 0 || (isl(options) && count_options(options) == 1))
-			statut = read_tar_file(argv[argc - 1]);
-
+			statut = read_tar(argv[argc - 1]);
 		else {
-			if (isp(options) ){
-				if(DEBUG){
-				printf("Le nombre de threads est : %d\n",options->nb_thread);
-				}
+
+			if (isp(options) )
 				thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
-			}
 
 			else if (isz(options))
 				extract_tar_gz(argv[argc - 1]);

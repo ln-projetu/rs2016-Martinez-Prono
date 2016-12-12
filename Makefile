@@ -7,9 +7,9 @@ INC = -I $(INCDIR)
 LIBFLAGS = -rdynamic -ldl
 CC = gcc
 ifeq ($(DEBUG),1)
-CFLAGS = -g -Wall -DDEBUG=1 -pthread 
+CFLAGS = -g -Wall -DDEBUG=1 -pthread
 else
-CFLAGS = -g -Wall -DDEBUG=0 -pthread 
+CFLAGS = -g -Wall -DDEBUG=0 -pthread
 endif
 
 PGM = ptar
@@ -27,8 +27,8 @@ all: build
 	$(CC) $(CFLAGS) $(INC) -c $< $(LIBFLAGS) -o $(BUILDDIR)/$@
 
 
-main: Option.o header_posix_ustar.o utils.o ptar.o main.o w_info.o
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFLAGS) -o $(TARGET) 
+main: Option.o header_posix_ustar.o utils.o ptar.o main.o w_info.o extract.o
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFLAGS) -o $(TARGET)
 
 
 build: main

@@ -153,7 +153,7 @@ char* print_as_list(header_posix_ustar *header) {
 	strftime(date, 30, "%Y-%m-%d %X", &time);
 
 	if (get_type(header) == '2') {
-		snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", date, " ", get_name(header),"->",get_linkname(header));
+		snprintf(finalstrng, BUF_SIZE, "%s%s%s%s%s%s%s%s%s%s%s%s%s", right, " ", uid, "/", gid, " ", size, " ", date, " ", get_name(header)," -> ",get_linkname(header));
 
 	}
 	else {
