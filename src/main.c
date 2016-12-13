@@ -37,7 +37,10 @@ int main(int argc, char *argv[]) {
 				thread_tab_bool=(int *)malloc(sizeof(int)*getnbp(options));
 				semaphore = (sem_t*)malloc(sizeof(sem_t));
 				sem_init(semaphore,0,getnbp(options));
-				statut = extract_tar(argv[argc - 1]);
+				if (isz(options))
+					statut = extract_tar_gz(argv[argc - 1]);
+				else
+					statut = extract_tar(argv[argc - 1]);
 			}
 
 			else if (isz(options))
@@ -49,7 +52,10 @@ int main(int argc, char *argv[]) {
 				thread_tab_bool=(int *)malloc(sizeof(int)*getnbp(options));
 				semaphore = (sem_t*)malloc(sizeof(sem_t));
 				sem_init(semaphore,0,1);
-				statut = extract_tar(argv[argc - 1]);
+				if (isz(options))
+					statut = extract_tar_gz(argv[argc - 1]);
+				else
+					statut = extract_tar(argv[argc - 1]);
 				
 			}
 		}

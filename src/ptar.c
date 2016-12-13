@@ -87,7 +87,8 @@ int extract_tar(char *filename) {
 	
 	if (fd != -1) {
 		sem_getvalue(semaphore,&sval);
-		printf("Before %d\n",sval);
+		if(DEBUG)
+			printf("Before %d\n",sval);
 		
 		while (nb_zeros_blocks < 2) {
 			header_posix_ustar *header = create_header();
@@ -117,18 +118,22 @@ int extract_tar(char *filename) {
 							if(thread_tab_bool[i] == 0){
 								
 								y=i;
-								printf("THREAD NULL in extract %d\n",y);
+								if(DEBUG)
+									printf("THREAD FREE IN LOOP %d\n",y);
 							}
 
 						}
 					}
 					
 					sem_getvalue(semaphore,&sval);
+					if(DEBUG)
+						printf("Sema after wait %d\n",y);
 					
-					printf("After %d\n",sval);
 					w->num_thread=y;
 					
-					printf("Follow %d\n",y );
+					if(DEBUG)
+						printf("THREAD SELECTED %d\n",y);
+					
 					if(getnbp(options) != 1){
 						if(thread_tab_bool[y] ==0){
 							thread_tab_bool[y]=1;
