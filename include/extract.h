@@ -8,7 +8,11 @@
  * calls the extract_X() method depending on the typeflag
  */
 void *extract_entry(void *args);
-void *extract_entry_nop(void *args);
+
+/**
+ * Call this method if you don't want use threads.
+ */
+void *extract_entry_nop(w_info* info);
 
 /**
  * Change the last modified date of a file

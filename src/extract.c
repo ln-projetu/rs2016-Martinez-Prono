@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -9,10 +10,8 @@
 #include <dlfcn.h>
 #include <utime.h>
 #include <time.h>
-#include "extract.h"
-
 #include <semaphore.h>
-
+#include "extract.h"
 #include "print.h"
 #include "option.h"
 
@@ -24,7 +23,7 @@ extern Option *options;
 void *extract_entry(void *args) {
 	int sval;
 	w_info *info = (w_info *) args;
-	//pthread_t current =  pthread_self();
+
 	if(DEBUG)
 		printf("## Current thread : %p\n", (pthread_t *)pthread_self());
 	header_posix_ustar *header =  get_header(info);
@@ -41,22 +40,17 @@ void *extract_entry(void *args) {
 	if(is_symblink(header))
 		extract_symblink(info);
 
-	
 	thread_tab_bool[info->num_thread]=0;
-	
+
 	sem_post(semaphore);
 	sem_getvalue(semaphore,&sval);
-	if(DEBUG)		
+	if(DEBUG)
 		printf("PST after post %d\n",sval);
 	free_w_info(info);
 	pthread_exit(NULL);
 }
 
-void *extract_entry_nop(void *args) {
-
-	w_info *info = (w_info *) args;
-
-
+void *extract_entry_nop(w_info* info) {
 	header_posix_ustar *header =  get_header(info);
 	print_results(header);
 
@@ -70,7 +64,6 @@ void *extract_entry_nop(void *args) {
 	if(is_symblink(header))
 		extract_symblink(info);
 
-	free_w_info(info);
 	return 0;
 }
 
@@ -93,6 +86,7 @@ void extract_regular_file(w_info* info) {
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
 	change_date_file(get_name(header), get_mtime(header));
+	printf("%d\n", octal_to_integer(atol(header->mtime)));
 	close(out);
 }
 
@@ -107,11 +101,13 @@ void extract_directory(w_info* info) {
 
 void extract_symblink(w_info* info) {
 	header_posix_ustar* header = get_header(info);
-
 	symlink(get_linkname(header),get_name(header));
-	int out = open(get_name(header),O_WRONLY);
+/*	int out = open(get_name(header),O_WRONLY);
 	fchmod(out, get_mode(header));
-	fchown(out, get_uid(header), get_gid(header));
-	change_date_file(get_name(header), get_mtime(header));
-	close(out);
+	fchown(out, get_uid(header), get_gid(header));*/
+	chmod(get_name(header), get_mode(header));
+	chown(get_name(header), get_uid(header), get_gid(header));
+	printf("%d\n", octal_to_integer(atol(header->mtime)));
+	//change_date_file(get_name(header), get_mtime(header));
+	//close(out);
 }

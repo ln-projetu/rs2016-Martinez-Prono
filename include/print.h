@@ -12,6 +12,8 @@ void print_results(header_posix_ustar *header);
 
 void print_corrupted();
 
+void print_no_args();
+
 void print_cannot_open(char *filename);
 
 

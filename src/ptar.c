@@ -6,15 +6,13 @@
 #include <fcntl.h>
 #include <dlfcn.h>
 #include <unistd.h>
+#include <semaphore.h>
 #include "header_posix_ustar.h"
 #include "ptar.h"
 #include "utils.h"
 #include "option.h"
 #include "extract.h"
 #include "w_info.h"
-
-#include <semaphore.h>
-
 #include "print.h"
 
 #define LENGTH_GZ 0x1000
@@ -45,7 +43,7 @@ int read_tar(char* filename) {
 		else {
 			if(check_sum(header) == 0) {
 				print_corrupted();
-				return -1;
+				return 1;
 			}
 
 			nb_zeros_blocks = 0;
@@ -88,12 +86,12 @@ int extract_tar(char *filename) {
 	int i=0;
 	int y=0;
 	int sval;
-	
+
 	if (fd != -1) {
 		sem_getvalue(semaphore,&sval);
 		if(DEBUG)
 			printf("Before %d\n",sval);
-		
+
 		while (nb_zeros_blocks < 2) {
 			header = create_header();
 			read(fd, header, BLOCK_SIZE);
@@ -104,61 +102,41 @@ int extract_tar(char *filename) {
 			}
 
 			else{
-				
-					nb_zeros_blocks = 0;
-					if(check_sum(header) == 0) {
-						print_corrupted();
-						return -1;
+
+				nb_zeros_blocks = 0;
+				if(check_sum(header) == 0) {
+					print_corrupted();
+					return 1;
+				}
+
+				w_info* w = create_w_info(header);
+				read(fd, w->buffer, get_size(header));
+				sem_wait(semaphore);
+				for(i=0;i<getnbp(options);i++){
+					if(thread_tab_bool[i] == 0){
+						y=i;
+						if(DEBUG)
+						printf("THREAD FREE IN LOOP %d\n",y);
 					}
-					//char* buffer = (char *)malloc(sizeof(char) * get_size(header));
-					w_info* w = create_w_info(header);
-					read(fd, w->buffer, get_size(header));
+				}
 
-					sem_wait(semaphore);
-					
+				sem_getvalue(semaphore,&sval);
+				if(DEBUG)
+					printf("Sema after wait %d\n",y);
 
-						for(i=0;i<getnbp(options);i++){
+				w->num_thread=y;
 
-							if(thread_tab_bool[i] == 0){
-								
-								y=i;
-								if(DEBUG)
-									printf("THREAD FREE IN LOOP %d\n",y);
-							}
+				if(DEBUG)
+					printf("THREAD SELECTED %d\n",y);
 
-						}
+				if(thread_tab_bool[y] ==0) {
+					thread_tab_bool[y]=1;
+					pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
+				}
 
-					
-					sem_getvalue(semaphore,&sval);
-					if(DEBUG)
-						printf("Sema after wait %d\n",y);
-					
-					w->num_thread=y;
-					
-					if(DEBUG)
-						printf("THREAD SELECTED %d\n",y);
-					
-
-						if(thread_tab_bool[y] ==0){
-							thread_tab_bool[y]=1;
-							pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
-
-						}
-
-
-					
-					//extract_entry(create_w_info(header, buffer));
-					//print_results(header);
-					
-					move_next_512b(fd, get_size(header), 1);
-					//free(marty);
-				
-
+				move_next_512b(fd, get_size(header), 1);
 			}
-			//free(header);
 		}
-		
-
 	}
 
 	for(i=0;i<getnbp(options);i++){
@@ -182,43 +160,33 @@ int extract_tar_nop(char *filename) {
 
 	int y=0;
 
-	
 	if (fd != -1) {
-
-		
 		while (nb_zeros_blocks < 2) {
 			header = create_header();
 			read(fd, header, BLOCK_SIZE);
-			//int move = get_size(header);
 
 			if (is_empty(header)) {
 				nb_zeros_blocks++;
+				free(header);
 			}
 
 			else{
-		
-					nb_zeros_blocks = 0;
-					if(check_sum(header) == 0) {
-						print_corrupted();
-						return -1;
-					}
-					//char* buffer = (char *)malloc(sizeof(char) * get_size(header));
-					w_info* w = create_w_info(header);
-					read(fd, w->buffer, get_size(header));
-					w->num_thread=y;
-					extract_entry_nop((void*) w);
-					//extract_entry(create_w_info(header, buffer));
-					//print_results(header);
-					
-					move_next_512b(fd, get_size(header), 1);
-					//free(marty);
+				nb_zeros_blocks = 0;
+				if(check_sum(header) == 0) {
+					print_corrupted();
+					return 1;
+				}
+				w_info* w = create_w_info(header);
+				read(fd, w->buffer, get_size(header));
+				w->num_thread = y;
+				extract_entry_nop(w);
+				move_next_512b(fd, get_size(header), 1);
+				free_w_info(w);
 			}
-			//free(header);
 		}
 	}
 
 	close(fd);
-	free(header);
 	return 0;
 }
 

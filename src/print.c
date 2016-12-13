@@ -18,6 +18,10 @@ void print_corrupted() {
 	printf("The archive is corrupted\n");
 }
 
+void print_no_args() {
+	printf("Usage\n\t./ptar -x myArchive.tar\n");
+}
+
 void print_cannot_open(char *filename) {
 	printf("Cannot open '%s'\n", filename);
 }
