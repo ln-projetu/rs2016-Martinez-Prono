@@ -47,11 +47,12 @@ void *extract_entry(void *args) {
 
 	if(getnbp(options) !=1)
 		thread_tab_bool[info->num_thread]=0;
-	free_w_info(info);
+	
 	sem_post(semaphore);
 	sem_getvalue(semaphore,&sval);
 	if(DEBUG)		
 		printf("PST after post %d\n",sval);
+	free_w_info(info);
 	pthread_exit(NULL);
 }
 

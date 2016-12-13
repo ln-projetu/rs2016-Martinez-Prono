@@ -71,6 +71,8 @@ int extract_tar_gz(char *filename) {
 	char *tar_file = uncompress_archive(filename);
 	if(tar_file == NULL)
 		return -1;
+	else if (isx(options)==0)
+		return 0;
 	else
 		return extract_tar(tar_file);
 }
@@ -78,7 +80,7 @@ int extract_tar_gz(char *filename) {
 int extract_tar(char *filename) {
 	// Count zeros block at the end of file
 	int nb_zeros_blocks = 0;
-
+	header_posix_ustar *header;
 	int fd = open_tar(filename);
 	//pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * 1);
 	int i=0;
@@ -91,7 +93,7 @@ int extract_tar(char *filename) {
 			printf("Before %d\n",sval);
 		
 		while (nb_zeros_blocks < 2) {
-			header_posix_ustar *header = create_header();
+			header = create_header();
 			read(fd, header, BLOCK_SIZE);
 			//int move = get_size(header);
 
@@ -146,13 +148,14 @@ int extract_tar(char *filename) {
 
 					
 					//extract_entry(create_w_info(header, buffer));
-					print_results(header);
+					//print_results(header);
+					
 					move_next_512b(fd, get_size(header), 1);
 					//free(marty);
 				
 
 			}
-
+			//free(header);
 		}
 		
 
@@ -162,11 +165,13 @@ int extract_tar(char *filename) {
 
 		pthread_join(thread_tab[i],NULL);
 
+
 	}
 	}
 	else
 		pthread_join(*thread_tab,NULL);
 	close(fd);
+	free(header);
 	return 0;
 }
 
