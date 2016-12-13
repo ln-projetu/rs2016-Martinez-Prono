@@ -42,11 +42,7 @@ void *extract_entry(void *args) {
 		extract_symblink(info);
 
 	
-	
-
-
-	if(getnbp(options) !=1)
-		thread_tab_bool[info->num_thread]=0;
+	thread_tab_bool[info->num_thread]=0;
 	
 	sem_post(semaphore);
 	sem_getvalue(semaphore,&sval);
@@ -54,6 +50,28 @@ void *extract_entry(void *args) {
 		printf("PST after post %d\n",sval);
 	free_w_info(info);
 	pthread_exit(NULL);
+}
+
+void *extract_entry_nop(void *args) {
+
+	w_info *info = (w_info *) args;
+
+
+	header_posix_ustar *header =  get_header(info);
+	print_results(header);
+
+	if(DEBUG)
+		printf("Extract '%s' -> %c\n", get_name(header), get_type(header));
+
+	if (is_regular_file(header))
+		extract_regular_file(info);
+	if (is_directory(header))
+		extract_directory(info);
+	if(is_symblink(header))
+		extract_symblink(info);
+
+	free_w_info(info);
+	return 0;
 }
 
 void change_date_file(char* name, long seconds) {

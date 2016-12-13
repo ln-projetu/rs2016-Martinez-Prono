@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 				statut = extract_tar_gz(argv[argc - 1]);
 
 			else if (isp(options) ){
+				printf("THREAD\n");
 				if(DEBUG == 1)
 					printf("Le nombre de threads est %d\n",getnbp(options) );
 
@@ -46,18 +47,13 @@ int main(int argc, char *argv[]) {
 
 			
 
-			else if(isx(options)){
-				setp(options);
-				setnb(options,1);
-				thread_tab = (pthread_t *)malloc(sizeof(pthread_t));
-				thread_tab_bool=(int *)malloc(sizeof(int)*getnbp(options));
-				semaphore = (sem_t*)malloc(sizeof(sem_t));
-				sem_init(semaphore,0,1);
+			else if(isx(options) && isp(options) == 0){
+				printf("WHITHOUT THREAD\n");
 				if (isz(options))
 					statut = extract_tar_gz(argv[argc - 1]);
 				else
-					statut = extract_tar(argv[argc - 1]);
-				
+					statut = extract_tar_nop(argv[argc - 1]);
+
 			}
 		}
 	}

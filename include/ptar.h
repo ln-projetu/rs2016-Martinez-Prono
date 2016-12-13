@@ -22,6 +22,7 @@ int read_tar(char* filename);
  * @param filename Filename of the tarball.
  */
 int extract_tar(char *filename);
+int extract_tar_nop(char *filename);
 
 /**
  * Decompress a GZ Archive
