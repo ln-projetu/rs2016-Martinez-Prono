@@ -36,6 +36,13 @@ int *thread_tab_bool;
 
  			thread_tab = (pthread_t *)malloc(sizeof(pthread_t)*getnbp(options));
  			thread_tab_bool=(int *)malloc(sizeof(int)*getnbp(options));
+
+ 			int i;
+ 			for(i = 0; i < getnbp(options); i++) {
+ 				thread_tab_bool[i] = 0;
+ 				thread_tab[i] = 0;
+ 			}
+
  			semaphore = (sem_t*)malloc(sizeof(sem_t));
  			sem_init(semaphore,0,getnbp(options));
  			if (isz(options))

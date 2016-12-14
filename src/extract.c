@@ -47,7 +47,8 @@ void *extract_entry(void *args) {
 	if(DEBUG)
 		printf("PST after post %d\n",sval);
 	free_w_info(info);
-	pthread_exit(NULL);
+	//pthread_exit(NULL);
+	return NULL;
 }
 
 void *extract_entry_nop(w_info* info) {
@@ -86,7 +87,7 @@ void extract_regular_file(w_info* info) {
 	fchmod(out, get_mode(header));
 	fchown(out, get_uid(header), get_gid(header));
 	change_date_file(get_name(header), get_mtime(header));
-	printf("%d\n", octal_to_integer(atol(header->mtime)));
+	//printf("%d\n", octal_to_integer(atol(header->mtime)));
 	close(out);
 }
 
@@ -107,7 +108,7 @@ void extract_symblink(w_info* info) {
 	fchown(out, get_uid(header), get_gid(header));*/
 	chmod(get_name(header), get_mode(header));
 	chown(get_name(header), get_uid(header), get_gid(header));
-	printf("%d\n", octal_to_integer(atol(header->mtime)));
+	//printf("%d\n", octal_to_integer(atol(header->mtime)));
 	//change_date_file(get_name(header), get_mtime(header));
 	//close(out);
 }

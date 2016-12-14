@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <errno.h>
 #include "header_posix_ustar.h"
 #include "ptar.h"
 #include "utils.h"
@@ -30,6 +31,7 @@ int open_tar(char* filename) {
 int read_tar(char* filename) {
 	int nb_zeros_blocks = 0;		// Count zeros block at the end of file
 	int fd = open_tar(filename);
+	int statut = 0;
 	if (fd == -1) {
 		print_cannot_open(filename);
 		return -1;
@@ -43,7 +45,8 @@ int read_tar(char* filename) {
 		else {
 			if(check_sum(header) == 0) {
 				print_corrupted();
-				return 1;
+				statut = 1;
+				break;
 			}
 
 			nb_zeros_blocks = 0;
@@ -51,10 +54,9 @@ int read_tar(char* filename) {
 		}
 		move_next_512b(fd, get_size(header), 0);
 	}
-
 	free(header);
 	close(fd);
-	return 0;
+	return statut;
 }
 
 void read_data_block(int fd, int size_data) {
@@ -67,14 +69,20 @@ void read_data_block(int fd, int size_data) {
 
 int extract_tar_gz(char *filename) {
 	char *tar_file = uncompress_archive(filename);
+	int statut;
+
 	if(tar_file == NULL)
-		return -1;
-	else if (isx(options)==0)
-		return 0;
-	else if (isp(options)==0)
-		return extract_tar_nop(tar_file);
+		statut = -1;
+	else if (isx(options) == 0)
+		statut = 0;
+	else if (isp(options) == 0)
+		statut = extract_tar_nop(tar_file);
 	else
-		return extract_tar(tar_file);
+		statut = extract_tar(tar_file);
+
+	unlink(tar_file);
+	free(tar_file);
+	return statut;
 }
 
 int extract_tar(char *filename) {
@@ -99,6 +107,7 @@ int extract_tar(char *filename) {
 
 			if (is_empty(header)) {
 				nb_zeros_blocks++;
+				free(header);
 			}
 
 			else{
@@ -109,45 +118,41 @@ int extract_tar(char *filename) {
 					return 1;
 				}
 
+				int move = get_size(header);
 				w_info* w = create_w_info(header);
 				read(fd, w->buffer, get_size(header));
 				sem_wait(semaphore);
-				for(i=0;i<getnbp(options);i++){
-					if(thread_tab_bool[i] == 0){
-						y=i;
-						if(DEBUG)
-						printf("THREAD FREE IN LOOP %d\n",y);
+
+				for(i = 0; i < getnbp(options); i++) {
+					if(thread_tab_bool[i] == 0) {
+						pthread_join(thread_tab[i], NULL);
+						y = i;
 					}
 				}
-
 				sem_getvalue(semaphore,&sval);
+
 				if(DEBUG)
 					printf("Sema after wait %d\n",y);
 
-				w->num_thread=y;
-
+				w->num_thread = y;
 				if(DEBUG)
 					printf("THREAD SELECTED %d\n",y);
 
-				if(thread_tab_bool[y] ==0) {
-					thread_tab_bool[y]=1;
+				if(thread_tab_bool[y] == 0) {
+					thread_tab_bool[y] = 1;
 					pthread_create(&thread_tab[y], NULL, extract_entry, (void*) w);
 				}
 
-				move_next_512b(fd, get_size(header), 1);
+				move_next_512b(fd, move, 1);
 			}
 		}
+		close(fd);
 	}
 
-	for(i=0;i<getnbp(options);i++){
-
-		pthread_join(thread_tab[i],NULL);
-
-
+	for(i = 0; i < getnbp(options); i++){
+		pthread_join(thread_tab[i], NULL);
 	}
 
-	close(fd);
-	free(header);
 	return 0;
 }
 
@@ -202,7 +207,6 @@ char *uncompress_archive(char* filename) {
 	gzeof 	= dlsym(handle, "gzeof");
 	gzclose = dlsym(handle, "gzclose");
 
-
 	int gz = (*gzopen)(filename, "r");
 	if(!gz){
 		print_cannot_open(filename);
@@ -224,6 +228,6 @@ char *uncompress_archive(char* filename) {
     close(out);
 	(*gzclose)(gz);
 
-
+	dlclose(handle);
 	return file_no_gz;
 }

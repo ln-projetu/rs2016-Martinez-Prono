@@ -38,7 +38,7 @@ clean: deleteFiles
 
 
 valgrind: build
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v $(TARGET) -x archive.tar
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v $(TARGET) -z archive.tar.gz
 
 
 ### --------------------------------
@@ -53,7 +53,6 @@ deleteFiles:
 
 deleteFilesO:
 	@rm -rf $(FILES)
-	
 
 createFiles: deleteFiles
 	@echo "my first file!" > file1

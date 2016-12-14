@@ -92,8 +92,7 @@ char* print_as_list(header_posix_ustar *header) {
 	sprintf(size, "%d", get_size(header));
 
 	char *finalstrng = (char*)malloc(sizeof(char) * BUF_SIZE);
-
-	char buf[2];
+	char buf[2] = "";
 	buf[0] = (header->mode)[4];
 	int ow = strtol(buf, NULL, 10);
 
@@ -104,7 +103,6 @@ char* print_as_list(header_posix_ustar *header) {
 	int oth = strtol(buf, NULL, 10);
 
 	int mode[3] = {ow, gr, oth};
-
 	int i;
 	for (i = 0; i < 3; i++) {
 		switch (mode[i]) {
@@ -189,8 +187,7 @@ void display_header(header_posix_ustar *header) {
 
 int check_sum(header_posix_ustar* header) {
 	int i;
-	unsigned int sum;
-	sum = 0;
+	unsigned int sum = 0;
 	char *ptr;
 	ptr = (char *) header;
 	for (i = 0; i < BLOCK_SIZE; i++)

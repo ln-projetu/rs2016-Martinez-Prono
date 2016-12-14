@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "print.h"
 #include "option.h"
 
@@ -7,8 +8,11 @@ extern Option *options;
 
 
 void print_results(header_posix_ustar *header) {
-	if (isl(options))
-		printf("%s\n", print_as_list(header));
+	if (isl(options) == 1) {
+		char *desc = print_as_list(header);
+		printf("%s\n", desc);
+		free(desc);
+	}
 	else
 		printf("%s\n", get_name(header));
 }
