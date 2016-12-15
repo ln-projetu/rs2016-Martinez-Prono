@@ -111,29 +111,46 @@
 
 	\par{Nous utilisons git comme gestionnaire de version. Chaque membre du groupe s'est occupé de parties et options spécifiques mais chaque membre est capable de comprendre et expliquer entièrement le code. Nous communiquons régulièrement sur notre avancement.\newline
 Le temps de travail estimé par chaque membre du groupe est de 30 heures.}\newline
-
+\newpage
 {\let\clearpage\relax\chapter{Aspects techniques}}
 
-\textbf{\underline{Format Tar}}\newline
-\par{L'archive tar étant segmentées en bloc de 512 octets, une fonction cherchant le multiple supérieur de 512 le plus proche de la position du curseur de lecture déplace ce curseur vers le prochain header. Cela permet de ne pas lire toutes la partie data des fichiers pour atteindre le prochain header.}
-\newpage
+{\let\clearpage\relax\section{ Format tar}}
+\par{L'archive tar étant segmentées en bloc de 512 octets, une fonction cherchant le multiple supérieur de 512 le plus proche de la position du curseur de lecture déplace ce curseur vers le prochain header. Cela permet de ne pas lire toutes la partie data des fichiers pour atteindre le prochain header.}\newline
 
-\textbf{\underline{Les threads}}\newline
+
+{\let\clearpage\relax\section{ Les threads}}
 \par{La partie des threads fonctionne de la façon suivante : Le thread principal passe le header ansi que les donnée d'un fichier sous fome d'un char[] au thread qui se charge d'ecrire le fichier avec la fonction fsync().}
 
 \par{Le nombre de thread disponibles est géré par une sémaphore qui empêche le thread principal de lancer un nouveau thread pour l'extraction d'un fichier. Les identificateurs des thread se trouvent dans un tableau dont chaque case représente un thread. Un tableau d'entier, dont chaque case est gérée par  au maximum unique thread permet au thread principal de connaître quels sont les thread disponibles.}
 
-\par{Lorsque tous les fichiers ont été extraits, le thread principal exécute une boucle sur le tableau de thread  avec pthread join sur chaque case pour s'assurer que l'execution des  threads sont finis.}
+\par{Lorsque tous les fichiers ont été extraits, le thread principal exécute une boucle sur le tableau de thread  avec pthread join sur chaque case pour s'assurer que l'execution des  threads sont finis.}\newline
 
-\textbf{\underline{Format gzip}}\newline
+{\let\clearpage\relax\section{ Format gzip}}
+
+\par{Pour gérer les archives gzip, nous chargeons dynamiquement la libraire zlib avec dlopen.}\newline
+
+
+
+{\let\clearpage\relax\section{ Les options}}
+\par{Les options sont gérés avec getopt(). Nous détectons des options incohérentes comme :}
+	\begin{itemize}
+    \item{Un nombre de thread égal à 0 ou 1}
+    \item{Le parametre thread -p sans extraction -x }
+    \item{Le nombre de thread -p manquant }
+
+
+	\end{itemize}
 
 \newpage
 {\let\clearpage\relax\chapter{Difficultés rencontrées}}
 
-\par{Nous nous sommes demandés si les threads devaient juste gérer l’écriture des fichiers ou la lecture et l'écriture, auquel cas le temps d'exécution du programme pouvait être amélioré. Une version thread en lecture et écriture à été faire, mais seule la version thread en écriture à été rendue, car plus conforme au sujets. }
+\par{Nous nous sommes demandés si les threads devaient juste gérer l’écriture des fichiers ou la lecture et l'écriture, auquel cas le temps d'exécution du programme pouvait être amélioré. Une version thread en lecture et écriture à été faire, mais seule la version thread en écriture à été rendue, car plus conforme au sujet. }
 
 \par{Nous avons débuggé notre programme avec valgrind pour éliminer toutes les fuites mémoires.}
 
+\par{Pour la gestion des dates d’accès et de modification, la compréhension des structures de date et temps nous a demander}
+
+\par{L'écriture d'un fichier dans un dossier change la date de modification de ce dossier.}
 
 	
 
