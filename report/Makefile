@@ -1,4 +1,4 @@
-CC=xelatex
+CC=pdflatex
 SRC=report.tex
 
 

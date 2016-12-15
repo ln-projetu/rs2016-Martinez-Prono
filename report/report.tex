@@ -35,7 +35,7 @@
 
 
 \titleformat{\chapter}[display]
-	{\huge\light\color{primary}}{#1}{0pt}{\Huge}
+	{\huge\color{primary}}{#1}{0pt}{\Huge}
 \titlespacing{\chapter}
 	{0pt}{0pt}{0pt}
 
@@ -79,6 +79,66 @@
 
 	\newpage\null\thispagestyle{empty}\newpage
 	\setcounter{page}{1}
+
+	\tableofcontents
+
+	\newpage
+	\chapter{Introduction}
+	\par{
+	Le projet de RS avait comme objectif la création d'un programme d'extraction d'archive tar. Plusieures options  sont implémentées. Un fonctionnalité majeure du programme est l'extraction en écriture utilise le  multithreading pour améliorer la vitesse d’exécution du programme. 
+	}
+
+	\newpage
+	
+	\chapter{Option Implémentées}
+
+	\par{ Toutes les options du sujet son implémentées dans notre programme :
+
+	}
+
+	\begin{itemize}
+    \item{l : pour l'affichage en liste}
+    \item{x : pour lancer l'extraction des fichiers}
+    \item{p : n pour définir un nombre de threads pour l'extraction. Nécessite donc l'option -x, }
+    \item{z : Traire une archive compressée avec gzip.}
+    \item{Checksum des fichiers extraits.}\newline
+
+	\end{itemize}
+
+	{\let\clearpage\relax\chapter{Organisation}}
+
+	\par{Nous avons lu de la documentation sur le format tar pour comprendre la structure d'une archive et  les informations contenues dans le header.}
+
+	\par{Nous utilisons git comme gestionnaire de version. Chaque membre du groupe s'est occupé de parties et options spécifiques mais chaque membre est capable de comprendre et expliquer entièrement le code. Nous communiquons régulièrement sur notre avancement.\newline
+Le temps de travail estimé par chaque membre du groupe est de 30 heures.}\newline
+
+{\let\clearpage\relax\chapter{Aspects techniques}}
+
+\textbf{\underline{Format Tar}}\newline
+\par{L'archive tar étant segmentées en bloc de 512 octets, une fonction cherchant le multiple supérieur de 512 le plus proche de la position du curseur de lecture déplace ce curseur vers le prochain header. Cela permet de ne pas lire toutes la partie data des fichiers pour atteindre le prochain header.}
+\newpage
+
+\textbf{\underline{Les threads}}\newline
+\par{La partie des threads fonctionne de la façon suivante : Le thread principal passe le header ansi que les donnée d'un fichier sous fome d'un char[] au thread qui se charge d'ecrire le fichier avec la fonction fsync().}
+
+\par{Le nombre de thread disponibles est géré par une sémaphore qui empêche le thread principal de lancer un nouveau thread pour l'extraction d'un fichier. Les identificateurs des thread se trouvent dans un tableau dont chaque case représente un thread. Un tableau d'entier, dont chaque case est gérée par  au maximum unique thread permet au thread principal de connaître quels sont les thread disponibles.}
+
+\par{Lorsque tous les fichiers ont été extraits, le thread principal exécute une boucle sur le tableau de thread  avec pthread join sur chaque case pour s'assurer que l'execution des  threads sont finis.}
+
+\textbf{\underline{Format gzip}}\newline
+
+\newpage
+{\let\clearpage\relax\chapter{Difficultés rencontrées}}
+
+\par{Nous nous sommes demandés si les threads devaient juste gérer l’écriture des fichiers ou la lecture et l'écriture, auquel cas le temps d'exécution du programme pouvait être amélioré. Une version thread en lecture et écriture à été faire, mais seule la version thread en écriture à été rendue, car plus conforme au sujets. }
+
+\par{Nous avons débuggé notre programme avec valgrind pour éliminer toutes les fuites mémoires.}
+
+
+	
+
+	\newpage
+	
 
 	\input{sections/thanks}
 
