@@ -10,15 +10,18 @@ w_info* create_w_info(header_posix_ustar *header) {
 	if(ptr == NULL)
 		return NULL;
 
-	ptr->buffer = (char *) malloc(sizeof(char) * get_size(header));
+	if(get_size(header) != 0)
+		ptr->buffer = (char *) malloc(sizeof(char) * get_size(header));
 	ptr->header = header;
 	return ptr;
 }
 
 void free_w_info(w_info *info) {
 	if(info != NULL) {
+		if(get_size(get_header(info)) != 0) {
+			free(info->buffer);
+		}
 		free(info->header);
-		free(info->buffer);
 		free(info);
 	}
 }
