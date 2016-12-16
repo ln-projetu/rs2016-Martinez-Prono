@@ -76,89 +76,114 @@
 	\end{titlepage}
 
 	\newpage
-
 	\newpage\null\thispagestyle{empty}\newpage
 	\setcounter{page}{1}
+	%\tableofcontents
+	%\newpage
 
-	\tableofcontents
+	\chapter{Remerciements}
 
-	\newpage
-	\chapter{Introduction}
-	\par{
-	Le projet de RS avait comme objectif la création d'un programme d'extraction d'archive tar. Plusieures options  sont implémentées. Un fonctionnalité majeure du programme est l'extraction en écriture utilise le  multithreading pour améliorer la vitesse d’exécution du programme. 
-	}
+Le déroulement de se projet nous a amenés à nous poser de nombreuses questions sans en avoir forcément une réponse. Le bien connu site web StackOverFlow nous a régulièrement aidés sur des difficultés d'aspect techniques liés à l'utilisation du langage C, la communauté y est très active et des explications sont fournis. Concernant les différentes API utilisés dans ce projet, nous nous sommes documentés sur les manuels linux.\\
 
-	\newpage
-	
-	\chapter{Option Implémentées}
+\noindent Enfin, nous tenons à remercier Lucas Nussbaum pour avoir répondu à nos questions de manière efficace et rapide sur des connaissances nous manquant pour réaliser ce projet à bien.
 
-	\par{ Toutes les options du sujet son implémentées dans notre programme :
+\clearpage
 
-	}
+	\section*{Introduction}
+	Le projet de Réseaux et Systèmes a pour objectif la création d'un programme d'extraction d'archive tar. Plusieures options  sont implémentées. La fonctionnalité majeure du programme est l'extraction en écriture. L'écriture des données sur le disque doit être garantie. En contrepartie, cette garantie entraine un ralentissement du système. Pour pallier ce problème de performance, nous avons utilisé le principe de multithreading pour améliorer la vitesse d’exécution du programme.
 
+
+	\section*{Conception}
+	Le programme repose sur deux structures de base: \textit{header\_posix\_ustar}
+	et \textit{w\_info}.\\
+	\noindent
+	\textit{header\_posix\_ustar} est une structure C représentant l'en-tête d'une entrée dans une archive tar (nom de l'entrée, typeflag, permissions ...). Cette structure directement expliqué dans le manuel de tar a une taille totale de 512 octets.\\La deuxième structure est \textit{w\_info}. Cette dernière regroupe un pointeur vers \\\textit{header\_posix\_ustar} ainsi qu'un pointeur vers les données liées à cette en-tête. C'est cette structure qui sera passé en paramètre des threads afin de permettre l'écriture des données en simultanée.\\
+
+	\noindent Dans l'objectif de réaliser un programme maintenable au fur et à mesure des tests, nous avons décidé d'éclater notre programme en plusieurs modules:
 	\begin{itemize}
-    \item{l : pour l'affichage en liste}
-    \item{x : pour lancer l'extraction des fichiers}
-    \item{p : n pour définir un nombre de threads pour l'extraction. Nécessite donc l'option -x, }
-    \item{z : Traire une archive compressée avec gzip.}
-    \item{Checksum des fichiers extraits.}\newline
-
+		\item \textit{header\_posix\_ustar}: représente la structure accompagnée de getters adéquates.
+		\item \textit{extract}: contient toutes les functions propres à l'éxtraction des données.
+		\item \textit{option}: permet de gérer les différentes options du programme.
+		\item \textit{print}: permet d'afficher dans la sortie standard les différentes messages d'erreur.
+		\item \textit{utils}: contient un ensemble de fonctions non utiles à l'extraction proprement dites des données mais utiles pour le programme (conversion d'octal en décimal, récupération du nom de fichier sans son extension...)
+		\item \textit{w\_info}: représente la structure décrite précédement des getters.
+		\item \textit{ptar}: contient l'ensemble des fonctions réalisant la lecture de l'archive tar suivant les options
+		de l'utilisateur.
+		\item \textit{main}: contient la fonction principale du programme.
 	\end{itemize}
 
-	{\let\clearpage\relax\chapter{Organisation}}
 
-	\par{Nous avons lu de la documentation sur le format tar pour comprendre la structure d'une archive et  les informations contenues dans le header.}
-
-	\par{Nous utilisons git comme gestionnaire de version. Chaque membre du groupe s'est occupé de parties et options spécifiques mais chaque membre est capable de comprendre et expliquer entièrement le code. Nous communiquons régulièrement sur notre avancement.\newline
-Le temps de travail estimé par chaque membre du groupe est de 30 heures.}\newline
-\newpage
-{\let\clearpage\relax\chapter{Aspects techniques}}
-
-{\let\clearpage\relax\section{ Format tar}}
-\par{L'archive tar étant segmentées en bloc de 512 octets, une fonction cherchant le multiple supérieur de 512 le plus proche de la position du curseur de lecture déplace ce curseur vers le prochain header. Cela permet de ne pas lire toutes la partie data des fichiers pour atteindre le prochain header.}\newline
-
-
-{\let\clearpage\relax\section{ Les threads}}
-\par{La partie des threads fonctionne de la façon suivante : Le thread principal passe le header ansi que les donnée d'un fichier sous fome d'un char[] au thread qui se charge d'ecrire le fichier avec la fonction fsync().}
-
-\par{Le nombre de thread disponibles est géré par une sémaphore qui empêche le thread principal de lancer un nouveau thread pour l'extraction d'un fichier. Les identificateurs des thread se trouvent dans un tableau dont chaque case représente un thread. Un tableau d'entier, dont chaque case est gérée par  au maximum unique thread permet au thread principal de connaître quels sont les thread disponibles.}
-
-\par{Lorsque tous les fichiers ont été extraits, le thread principal exécute une boucle sur le tableau de thread  avec pthread join sur chaque case pour s'assurer que l'execution des  threads sont finis.}\newline
-
-{\let\clearpage\relax\section{ Format gzip}}
-
-\par{Pour gérer les archives gzip, nous chargeons dynamiquement la libraire zlib avec dlopen.}\newline
-
-
-
-{\let\clearpage\relax\section{ Les options}}
-\par{Les options sont gérés avec getopt(). Nous détectons des options incohérentes comme :}
+\section*{Options Implémentées}
+	Toutes les options du sujet ont été implémentées dans notre programme :
 	\begin{itemize}
-    \item{Un nombre de thread égal à 0 ou 1}
-    \item{Le parametre thread -p sans extraction -x }
-    \item{Le nombre de thread -p manquant }
-
-
+	    \item{l : Permet d'afficher une liste détaillé des entrées de l'archive tar}
+	    \item{x : Permet l'extraction de l'archive tar de manière sans optimisation des performances}
+	    \item{p : Permet l'extraction optimisée de l'archive avec N threads. Il est nécessaire d'avoir l'options -x d'actif pour extraire.}
+	    \item{z : Permet de d'extraire une archive tar compressé au format \textit{gzip}.}
+	    \item{Checksum des fichiers extraits.}\\
 	\end{itemize}
 
+
+\section*{Organisation}
+	L'ensemble du projet a été versionné à l'aide de l'outil git. L'utilisation de cet outil s'est révélé agréable En effet, nous nous étions répartis le travail de manière équitable. En géneral, un membre était responsable d'une étape du projet, les étapes étant liées les une autres, il nous ai également arrivé de travailler sur le travail de l'autre membre. Un fichier README a été mis en place au tout début du projet afin d'en comprendre sa structure. Nous avons lu de la documentation sur le format tar pour comprendre la structure d'une archive et  les informations contenues dans le header.\\
+
+	\noindent Voici le nombres d'heures de chaque membre pour les différentes phases du projet:\\
+
+	\begin{center}
+		\noindent\begin{tabular}{|l|c|c|}
+	\hline
+		\textbf{Travail} 	& \textbf{Lucas Martinez} 	& \textbf{Yann Prono} \\
+	\hline
+		conception 			& 5 							& 6  	 \\
+		Codage 				& 18							& 16 \\
+		Tests 				& 	5						& 4 \\
+		Bugs/Fuites mémoires 	& 	2						& 3 \\
+		Rédaction du rapport & 2							& 2 \\
+	\hline
+		\textbf{Total heures} & 32 heures & 31 heures \\
+		\hline
+	\end{tabular}
+	\end{center}
+
 \newpage
-{\let\clearpage\relax\chapter{Difficultés rencontrées}}
+%\section*{Aspects techniques}
 
-\par{Nous nous sommes demandés si les threads devaient juste gérer l’écriture des fichiers ou la lecture et l'écriture, auquel cas le temps d'exécution du programme pouvait être amélioré. Une version thread en lecture et écriture à été faire, mais seule la version thread en écriture à été rendue, car plus conforme au sujet. }
+%section{ Format tar}}
+%\par{L'archive tar étant segmentées en bloc de 512 octets, une fonction cherchant le multiple supérieur de 512 le plus proche de la position du curseur de lecture déplace ce curseur vers le prochain header. Cela permet de ne pas lire toutes la partie data des fichiers pour atteindre le prochain header.}\newline
 
-\par{Nous avons débuggé notre programme avec valgrind pour éliminer toutes les fuites mémoires.}
 
-\par{Pour la gestion des dates d’accès et de modification, la compréhension des structures de date et temps nous a demander}
+\section*{Utilisation des threads}
 
-\par{L'écriture d'un fichier dans un dossier change la date de modification de ce dossier.}
+La partie des threads fonctionne de la façon suivante : Le thread principal passe le header ansi que les donnée d'un fichier sous fome d'un char[] au thread qui se charge d'ecrire le fichier avec la fonction fsync().
 
-	
+Le nombre de thread disponibles est géré par une sémaphore qui empêche le thread principal de lancer un nouveau thread pour l'extraction d'un fichier. Les identificateurs des thread se trouvent dans un tableau dont chaque case représente un thread. Un tableau d'entier, dont chaque case est gérée par  au maximum unique thread permet au thread principal de connaître quels sont les threads disponibles.
 
-	\newpage
-	
+Lorsque tous les fichiers ont été extraits, le thread principal exécute une boucle sur le tableau de thread  avec pthread join sur chaque case pour s'assurer que l'éxecution des  threads sont finis.\\
 
-	\input{sections/thanks}
+\section*{Format gzip}
 
-	\clearpage
+Pour gérer les archives gzip, nous chargeons dynamiquement la libraire zlib avec dlopen.
+
+%Les options}}
+%\par{Les options sont gérés avec getopt(). Nous détectons des options incohérentes comme :}
+	%\begin{itemize}
+	    %\item{Un nombre de thread égal à 0 ou 1}
+    	%\item{Le parametre thread -p sans extraction -x }
+    	%\item{Le nombre de thread -p manquant }
+	%\end{itemize}
+
+\section*{Difficultés rencontrées}
+
+Nous nous sommes demandés si les threads devaient juste gérer l’écriture des fichiers ou la lecture et l'écriture, auquel cas le temps d'exécution du programme pouvait être amélioré. Une version thread en lecture et écriture à été faite, mais seule la version thread en écriture à été rendue, car plus conforme au sujet.\\
+
+\noindent Deux semaines avant le rendu, nous avons commencé à trouver les bugs et fuites mémoires de notre programme avec l'outil valgrind. Une grande partie de ces fuites ont été corrigés mais certaines subsisten, notamment avec l'utilisation de la fonction chargeant dynamiquement les librairies (dlopen). Quelqes difficultés ont étés rencontrées autour de la gestion des dates. La documentation sur les fonctions des dates sont nombreuses mais ne font pas toutes les mêmes choses. De plus, le manque d'exemple nous a demandé plus de recherche afin de pouvoir affecter la date de modification à une entrée de l'archive.\\
+
+%L'écriture d'un fichier dans un dossier change la date de modification de ce dossier.}
+
+
+\section*{Remerciements}
+
+Le déroulement de se projet nous a amenés à nous poser de nombreuses questions sans en avoir forcément une réponse. Le bien connu site web StackOverFlow nous a régulièrement aidés sur des difficultés d'aspect techniques liés à l'utilisation du langage C, la communauté y est très active et des explications sont fournis. Concernant les différentes API utilisés dans ce projet, nous nous sommes documentés sur les manuels linux. Enfin, nous tenons à remercier Lucas Nussbaum pour avoir répondu à nos questions de manière efficace et rapide sur des connaissances nous manquant pour réaliser ce projet à bien.
+
 
 \end{document}
